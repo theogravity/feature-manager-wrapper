@@ -6,6 +6,7 @@ module.exports = {
   },
   rules: {
     'prettier/prettier': 'error',
+    '@typescript-eslint/no-explicit-any': 'off',
   },
   plugins: ['@typescript-eslint', 'prettier'],
 }

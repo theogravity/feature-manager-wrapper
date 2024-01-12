@@ -1,0 +1,17 @@
+- setting: enable_database
+  value: true
+
+- setting: max_power
+  value: 1
+  except:
+    - value: 0
+      environment:
+        - production
+      power: low
+
+- setting: database_name
+  value: test-database
+  except:
+    - value: prd-database
+      environment:
+        - production
