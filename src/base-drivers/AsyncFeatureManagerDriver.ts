@@ -25,6 +25,12 @@ export abstract class AsyncFeatureManagerDriver<
     return this.toBoolean(value)
   }
 
+  /**
+   * Returns the value assigned to the key as a boolean. If the value is not natively a boolean:
+   * - If the value is a string, it will return true if the string is "true" or "1", false otherwise
+   * - If the value is a number, it will return true if the number is 1, false otherwise
+   * - Returns false in all other cases
+   */
   protected toBoolean(value: any): boolean {
     if (typeof value === 'boolean') {
       return value
@@ -49,6 +55,13 @@ export abstract class AsyncFeatureManagerDriver<
     return this.toStr(value)
   }
 
+  /**
+   * Converts a value to a string.
+   * - Returns null if the value is null or undefined.
+   * - Returns the string directly if the value is a string.
+   * - Converts and returns the value as a string if it's a number or boolean.
+   * - Converts and returns the JSON stringified value if it's an object.
+   */
   protected toStr(value: any): string | null {
     if (value === null || value === undefined) {
       return null
@@ -73,9 +86,6 @@ export abstract class AsyncFeatureManagerDriver<
     return null
   }
 
-  /**
-   * Returns the value assigned to the key as an object. Returns null if the value does not exist or cannot be converted to an object using secure-json-parse.
-   */
   async getObjValue<K extends string & keyof Flags>(
     key: K,
     params?: CommonValueParams<Flags, K>
@@ -85,6 +95,12 @@ export abstract class AsyncFeatureManagerDriver<
     return this.toObj<K>(value)
   }
 
+  /**
+   * Converts a value to an object.
+   * - Returns null if the value is null or undefined.
+   * - Returns the value directly if it's an object.
+   * - Attempts to parse and return the value if it's a string (using secure-json-parse).
+   */
   protected toObj<K extends keyof Flags>(value: any): Flags[K] | null {
     if (value === null || value === undefined) {
       return null
@@ -117,6 +133,12 @@ export abstract class AsyncFeatureManagerDriver<
     return this.toNum(value)
   }
 
+  /**
+   * Converts a value to a number.
+   * - Returns null if the value is null, undefined, or a non-numeric string.
+   * - Returns the value directly if it's a number.
+   * - Converts and returns 1 or 0 if the value is a boolean.
+   */
   protected toNum(value: any): number | null {
     if (value === null || value === undefined) {
       return null
@@ -150,6 +172,13 @@ export abstract class AsyncFeatureManagerDriver<
     return this.toValue<K>(value)
   }
 
+  /**
+   * Converts a value to its corresponding type based on the flag key.
+   * - Returns null if the value is null or undefined.
+   * - Converts and returns the value based on its type (number, boolean, string, object).
+   * - Uses the appropriate conversion method (toNum, toBoolean, toStr, toObj) based on the type of the value.
+   * - Handles string values that can be converted to numbers, booleans, or objects.
+   */
   protected toValue<K extends keyof Flags>(value: any): Flags[K] | null {
     if (value === null || value === undefined) {
       return null
