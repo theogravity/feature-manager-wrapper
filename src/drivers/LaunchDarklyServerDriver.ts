@@ -1,6 +1,6 @@
 import type { LDClient } from '@launchdarkly/node-server-sdk'
 import type { LDContext } from '@launchdarkly/js-sdk-common'
-import { AsyncBaseConfigDriver } from '../base-drivers/AsyncBaseConfigDriver'
+import { AsyncFeatureManagerDriver } from '../base-drivers/AsyncFeatureManagerDriver'
 import { CommonValueParams } from '../types'
 
 /**
@@ -9,7 +9,7 @@ import { CommonValueParams } from '../types'
 export class LaunchDarklyServerDriver<
   Flags extends Record<string, any> = Record<string, any>,
   Context extends LDContext = LDContext,
-> extends AsyncBaseConfigDriver<Flags, Context> {
+> extends AsyncFeatureManagerDriver<Flags, Context> {
   client: LDClient
   defaultContext: LDContext
 
@@ -37,7 +37,7 @@ export class LaunchDarklyServerDriver<
     return this.client.variation(key, this.defaultContext, params?.defaultValue)
   }
 
-  async getAllValues(params?: { context?: Context }): Promise<Flags> {
+  async getAllRawValues(params?: { context?: Context }): Promise<Flags> {
     const context = params?.context ?? this.defaultContext
     const flagsState = await this.client.allFlagsState(context)
 

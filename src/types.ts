@@ -3,10 +3,18 @@ export type CommonValueParams<Flags, K extends keyof Flags> = {
   context?: any // Replace 'any' with the actual type for context if known
 }
 
-export interface SyncConfigLayerImpl<
+export interface ISyncFeatureManager<
   Flags extends Record<string, any>,
   Context,
 > {
+  /**
+   * Returns the value assigned to the key with a conversation attempt. Returns null if the value does not exist.
+   * Recommended that you use a specific getter instead of this one.
+   */
+  getValueSync<K extends string & keyof Flags>(
+    key: K,
+    params?: CommonValueParams<Flags, K>
+  ): Flags[K] | null
   /**
    * Returns the value assigned to the key without any conversion. Returns null if the value does not exist.
    **/
@@ -51,9 +59,9 @@ export interface SyncConfigLayerImpl<
   ): number | null
 
   /**
-   * Returns all flags and their values. Values may need to be converted to an expected type depending on the driver used.
+   * Returns all data in their original stored format. Values may need to be converted to an expected type depending on the driver used.
    */
-  getAllValuesSync(params?: { context?: Context }): Flags
+  getAllRawValuesSync(params?: { context?: Context }): Flags
 
   /**
    * Closes the connection to the config manager
@@ -61,10 +69,18 @@ export interface SyncConfigLayerImpl<
   close(): Promise<void>
 }
 
-export interface AsyncConfigLayerImpl<
+export interface IAsyncFeatureManager<
   Flags extends Record<string, any>,
   Context,
 > {
+  /**
+   * Returns the value assigned to the key with a conversation attempt. Returns null if the value does not exist.
+   * Recommended that you use a specific getter instead of this one.
+   */
+  getValue<K extends string & keyof Flags>(
+    key: K,
+    params?: CommonValueParams<Flags, K>
+  ): Promise<Flags[K] | null>
   /**
    * Returns the value assigned to the key without any conversion. Returns null if the value does not exist.
    **/
@@ -109,9 +125,9 @@ export interface AsyncConfigLayerImpl<
   ): Promise<number | null>
 
   /**
-   * Returns all flags and their values. Values may need to be converted to an expected type depending on the driver used.
+   * Returns all data in their original stored format. Values may need to be converted to an expected type depending on the driver used.
    */
-  getAllValues(params?: { context?: Context }): Promise<Flags>
+  getAllRawValues(params?: { context?: Context }): Promise<Flags>
 
   /**
    * Closes the connection to the config manager

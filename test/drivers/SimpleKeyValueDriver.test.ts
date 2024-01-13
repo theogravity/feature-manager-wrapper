@@ -33,10 +33,10 @@ describe('SimpleKeyValueDriver', () => {
   });
 
   it('should return all key-value pairs', () => {
-    expect(driver.getAllValuesSync()).toEqual(config);
+    expect(driver.getAllRawValuesSync()).toEqual(config);
   });
 
   it('should return all key-value pairs (async)', async () => {
-    await expect(driver.getAllValues()).resolves.toEqual(config);
+    await expect(driver.getAllRawValues()).resolves.toEqual(config);
   });
 });

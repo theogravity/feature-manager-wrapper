@@ -1,5 +1,5 @@
 import { CommonValueParams } from '../types'
-import { SyncBaseConfigDriver } from '../base-drivers/SyncBaseConfigDriver'
+import { SyncFeatureManagerDriver } from '../base-drivers/SyncFeatureManagerDriver'
 
 /**
  * Takes in a key / value mapping as the configuration. Supports sync and async operations.
@@ -7,7 +7,7 @@ import { SyncBaseConfigDriver } from '../base-drivers/SyncBaseConfigDriver'
 export class SimpleKeyValueDriver<
   Flags extends Record<string, any> = Record<string, any>,
   Context = never,
-> extends SyncBaseConfigDriver<Flags, Context> {
+> extends SyncFeatureManagerDriver<Flags, Context> {
   conf: Flags
 
   constructor(conf: Flags) {
@@ -39,16 +39,16 @@ export class SimpleKeyValueDriver<
   /**
    * Returns all the environment variables
    */
-  getAllValuesSync(): Flags {
+  getAllRawValuesSync(): Flags {
     return this.conf as Flags
   }
 
   /**
    * Returns all the environment variables
-   * @alias getAllValuesSync
+   * @alias getAllRawValuesSync
    */
-  async getAllValues(): Promise<Flags> {
-    return this.getAllValuesSync()
+  async getAllRawValues(): Promise<Flags> {
+    return this.getAllRawValuesSync()
   }
 
   /**

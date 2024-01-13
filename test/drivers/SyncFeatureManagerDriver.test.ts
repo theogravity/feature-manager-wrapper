@@ -1,10 +1,10 @@
-import { CommonValueParams, SyncBaseConfigDriver } from "../../src";
+import { CommonValueParams, SyncFeatureManagerDriver } from '../../src'
 
 // Simple in-memory key/value store implementation of BaseFeatureDriver
 class SimpleFeatureDriver<
   Flags extends Record<string, any> = Record<string, any>,
   Context = never,
-> extends SyncBaseConfigDriver<Flags, Context> {
+> extends SyncFeatureManagerDriver<Flags, Context> {
   store: Flags
 
   constructor(store: Flags) {
@@ -17,8 +17,8 @@ class SimpleFeatureDriver<
     return this.store
   }
 
-  async getAllValues(): Promise<Flags> {
-    return this.getAllValuesSync()
+  async getAllRawValues(): Promise<Flags> {
+    return this.getAllRawValuesSync()
   }
 
   async getRawValue<K extends string & keyof Flags>(
@@ -31,8 +31,8 @@ class SimpleFeatureDriver<
     return
   }
 
-  getAllValuesSync(): Flags {
-    return this.store;
+  getAllRawValuesSync(): Flags {
+    return this.store
   }
 
   getRawValueSync<K extends string & keyof Flags>(key: K): Flags[K] | null {
@@ -61,14 +61,16 @@ describe('BaseFeatureDriver', () => {
     expect(await driver.getRawValue('flagStr')).toBe('test')
     expect(await driver.getRawValue('flagNum')).toBe(42)
     expect(await driver.getRawValue('flagObj')).toEqual({ key: 'value' })
-    expect(await driver.getRawValue('flagInvalidJSON')).toBe("{invalid: 'json'}")
+    expect(await driver.getRawValue('flagInvalidJSON')).toBe(
+      "{invalid: 'json'}"
+    )
     expect(await driver.getRawValue('flagBoolStr')).toBe('true')
     expect(await driver.getRawValue('flagNumStr')).toBe('42')
     expect(await driver.getRawValue('flagBoolNum')).toBe(1)
-  });
+  })
 
   test('getAllValues should return all values', async () => {
-    expect(await driver.getAllValues()).toEqual({
+    expect(await driver.getAllRawValues()).toEqual({
       flagBool: true,
       flagStr: 'test',
       flagNum: 42,
@@ -105,7 +107,6 @@ describe('BaseFeatureDriver', () => {
   test('getNumValue should return correct number values or null', async () => {
     expect(await driver.getNumValue('flagNum')).toBe(42)
     expect(await driver.getNumValue('flagStr')).toBeNull()
-    expect(await driver.getNumValue('flagBool')).toBe(1)
     expect(await driver.getNumValue('flagNumStr')).toBe(42)
   })
 

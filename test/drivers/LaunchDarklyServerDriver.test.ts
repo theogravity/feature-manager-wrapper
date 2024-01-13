@@ -27,7 +27,7 @@ describe('LaunchDarklyServerDriver', () => {
   });
 
   test('getAllValues returns all flag values', async () => {
-    const values = await driver.getAllValues();
+    const values = await driver.getAllRawValues();
     expect(values).toEqual({ testFlag: true });
     expect(ldClient.allFlagsState).toHaveBeenCalled();
   });

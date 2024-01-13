@@ -1,17 +1,17 @@
-import { CommonValueParams, SyncConfigLayerImpl } from '../types'
-import { AsyncBaseConfigDriver } from './AsyncBaseConfigDriver'
+import { CommonValueParams, ISyncFeatureManager } from '../types'
+import { AsyncFeatureManagerDriver } from './AsyncFeatureManagerDriver'
 
 /**
  * A driver that supports both sync and async operations
  */
-export abstract class SyncBaseConfigDriver<
+export abstract class SyncFeatureManagerDriver<
     Flags extends Record<string, any> = Record<string, any>,
     Context = never,
   >
-  extends AsyncBaseConfigDriver<Flags, Context>
-  implements SyncConfigLayerImpl<Flags, Context>
+  extends AsyncFeatureManagerDriver<Flags, Context>
+  implements ISyncFeatureManager<Flags, Context>
 {
-  abstract getAllValues(
+  abstract getAllRawValues(
     params?: { context?: Context | undefined } | undefined
   ): Promise<Flags>
   abstract close(): Promise<void>
@@ -21,7 +21,7 @@ export abstract class SyncBaseConfigDriver<
     params?: CommonValueParams<Flags, K>
   ): Flags[K] | null
 
-  abstract getAllValuesSync(params?: { context?: Context }): Flags
+  abstract getAllRawValuesSync(params?: { context?: Context }): Flags
 
   getBoolValueSync<K extends string & keyof Flags>(
     key: K,
@@ -60,5 +60,13 @@ export abstract class SyncBaseConfigDriver<
     const value = this.getRawValueSync(key, params)
 
     return this.toNum(value)
+  }
+
+  getValueSync<K extends string & keyof Flags>(
+    key: K,
+    params?: CommonValueParams<Flags, K>
+  ): Flags[K] | null {
+    const value = this.getRawValueSync(key, params)
+    return this.toValue(value)
   }
 }

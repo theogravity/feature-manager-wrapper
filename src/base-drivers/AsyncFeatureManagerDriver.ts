@@ -1,17 +1,14 @@
 import * as SJSON from 'secure-json-parse'
-import { CommonValueParams, AsyncConfigLayerImpl } from '../types'
+import { CommonValueParams, IAsyncFeatureManager } from '../types'
 
-/**
- * A driver that only supports async operations
- */
-export abstract class AsyncBaseConfigDriver<
+export abstract class AsyncFeatureManagerDriver<
   Flags extends Record<string, any> = Record<string, any>,
   Context = never,
-> implements AsyncConfigLayerImpl<Flags, Context>
+> implements IAsyncFeatureManager<Flags, Context>
 {
-  abstract getAllValues(
-    params?: { context?: Context | undefined } | undefined
-  ): Promise<Flags>
+  abstract getAllRawValues(params?: {
+    context?: Context | undefined
+  }): Promise<Flags>
   abstract close(): Promise<void>
 
   abstract getRawValue<K extends string & keyof Flags>(
@@ -34,7 +31,7 @@ export abstract class AsyncBaseConfigDriver<
     }
 
     if (typeof value === 'string') {
-      return value === 'true' || value === '1'
+      return value.toLowerCase() === 'true' || value === '1'
     }
 
     if (typeof value === 'number') {
@@ -53,11 +50,7 @@ export abstract class AsyncBaseConfigDriver<
   }
 
   protected toStr(value: any): string | null {
-    if (value === null) {
-      return null
-    }
-
-    if (value === undefined) {
+    if (value === null || value === undefined) {
       return null
     }
 
@@ -77,7 +70,7 @@ export abstract class AsyncBaseConfigDriver<
       return JSON.stringify(value)
     }
 
-    return ''
+    return null
   }
 
   /**
@@ -92,8 +85,8 @@ export abstract class AsyncBaseConfigDriver<
     return this.toObj<K>(value)
   }
 
-  protected toObj<K extends string & keyof Flags>(value: any): Flags[K] | null {
-    if (value === undefined) {
+  protected toObj<K extends keyof Flags>(value: any): Flags[K] | null {
+    if (value === null || value === undefined) {
       return null
     }
 
@@ -125,7 +118,7 @@ export abstract class AsyncBaseConfigDriver<
   }
 
   protected toNum(value: any): number | null {
-    if (value === undefined) {
+    if (value === null || value === undefined) {
       return null
     }
 
@@ -144,6 +137,51 @@ export abstract class AsyncBaseConfigDriver<
 
     if (typeof value === 'boolean') {
       return value ? 1 : 0
+    }
+
+    return null
+  }
+
+  async getValue<K extends string & keyof Flags>(
+    key: K,
+    params?: CommonValueParams<Flags, K>
+  ): Promise<Flags[K] | null> {
+    const value: any = await this.getRawValue(key, params)
+    return this.toValue<K>(value)
+  }
+
+  protected toValue<K extends keyof Flags>(value: any): Flags[K] | null {
+    if (value === null || value === undefined) {
+      return null
+    }
+
+    if (typeof value === 'number') {
+      return this.toNum(value) as Flags[K] | null
+    }
+
+    if (typeof value === 'boolean') {
+      return this.toBoolean(value) as Flags[K] | null
+    }
+
+    if (typeof value === 'string') {
+      if (!isNaN(Number(value))) {
+        return this.toNum(value) as Flags[K] | null
+      }
+
+      if (value.toLowerCase() === 'true' || value.toLowerCase() === 'false') {
+        return this.toBoolean(value) as Flags[K] | null
+      }
+
+      try {
+        JSON.parse(value)
+        return this.toObj<K>(value)
+      } catch (e) {
+        return this.toStr(value) as Flags[K] | null
+      }
+    }
+
+    if (typeof value === 'object') {
+      return this.toObj<K>(value)
     }
 
     return null

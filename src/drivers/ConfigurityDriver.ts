@@ -1,5 +1,5 @@
 import { Cerebro, ICerebroConfig } from 'configurity'
-import { SyncBaseConfigDriver } from '../base-drivers/SyncBaseConfigDriver'
+import { SyncFeatureManagerDriver } from '../base-drivers/SyncFeatureManagerDriver'
 import { CommonValueParams } from '../types'
 
 /**
@@ -9,7 +9,7 @@ import { CommonValueParams } from '../types'
 export class ConfigurityDriver<
   Flags extends Record<string, any> = Record<string, any>,
   Context extends Record<string, any> = Record<string, any>,
-> extends SyncBaseConfigDriver<Flags, Context> {
+> extends SyncFeatureManagerDriver<Flags, Context> {
   /**
    * Instance of the Cerebro parser
    */
@@ -64,7 +64,7 @@ export class ConfigurityDriver<
    * Returns all settings, or if specified
    * all settings specific to a given label
    */
-  getAllValuesSync(params?: { context?: Context } | undefined): Flags {
+  getAllRawValuesSync(params?: { context?: Context } | undefined): Flags {
     if (params?.context) {
       const config = this.getAndCacheContext(params.context)
       return config.getRawConfig() as Flags
@@ -77,10 +77,10 @@ export class ConfigurityDriver<
    * Returns all settings, or if specified
    * all settings specific to a given label
    *
-   * @alias getAllValuesSync
+   * @alias getAllRawValuesSync
    */
-  async getAllValues(params?: { context?: Context }): Promise<Flags> {
-    return this.getAllValuesSync(params)
+  async getAllRawValues(params?: { context?: Context }): Promise<Flags> {
+    return this.getAllRawValuesSync(params)
   }
 
   private getAndCacheContext(context: Context) {

@@ -51,13 +51,13 @@ describe("Configurity driver", () => {
   })
 
   it('returns all values', async () => {
-    expect(await driver.getAllValues()).toEqual({
+    expect(await driver.getAllRawValues()).toEqual({
       enable_database: true,
       max_power: 1,
       database_name: 'test-database'
     })
 
-    expect(driver.getAllValuesSync()).toEqual({
+    expect(driver.getAllRawValuesSync()).toEqual({
       enable_database: true,
       max_power: 1,
       database_name: 'test-database'
@@ -65,7 +65,7 @@ describe("Configurity driver", () => {
   })
 
   it('returns all values using a context', async () => {
-    expect(await driver.getAllValues({
+    expect(await driver.getAllRawValues({
       context: {
         environment: 'production',
         power: 'low'

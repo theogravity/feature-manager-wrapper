@@ -37,8 +37,8 @@ describe('EnvironmentDriver', () => {
   });
 
   it('should return all environment variables', async () => {
-    expect(await driver.getAllValues()).toEqual(mockEnv);
-    expect(driver.getAllValuesSync()).toEqual(mockEnv);
+    expect(await driver.getAllRawValues()).toEqual(mockEnv);
+    expect(driver.getAllRawValuesSync()).toEqual(mockEnv);
   });
 
   it('should handle default values correctly', async () => {

@@ -1,5 +1,5 @@
 import { CommonValueParams } from '../types'
-import { SyncBaseConfigDriver } from '../base-drivers/SyncBaseConfigDriver'
+import { SyncFeatureManagerDriver } from '../base-drivers/SyncFeatureManagerDriver'
 
 /**
  * Uses process.env to get the values. Supports sync and async operations.
@@ -7,7 +7,7 @@ import { SyncBaseConfigDriver } from '../base-drivers/SyncBaseConfigDriver'
 export class EnvironmentDriver<
   Flags extends Record<string, any> = Record<string, any>,
   Context = never,
-> extends SyncBaseConfigDriver<Flags, Context> {
+> extends SyncFeatureManagerDriver<Flags, Context> {
   /**
    * Returns the value of the given environment variable name. Returns null if not found. All values are returned as strings if found.
    * @alias getRawValueSync
@@ -32,16 +32,16 @@ export class EnvironmentDriver<
   /**
    * Returns all the environment variables
    */
-  getAllValuesSync(): Flags {
+  getAllRawValuesSync(): Flags {
     return process.env as Flags
   }
 
   /**
    * Returns all the environment variables
-   * @alias getAllValuesSync
+   * @alias getAllRawValuesSync
    */
-  async getAllValues(): Promise<Flags> {
-    return this.getAllValuesSync()
+  async getAllRawValues(): Promise<Flags> {
+    return this.getAllRawValuesSync()
   }
 
   /**
