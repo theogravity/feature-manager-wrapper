@@ -8,10 +8,6 @@ export class EnvironmentDriver<
   Flags extends Record<string, any> = Record<string, any>,
   Context = never,
 > extends SyncFeatureManagerDriver<Flags, Context> {
-  /**
-   * Returns the value of the given environment variable name. Returns null if not found. All values are returned as strings if found.
-   * @alias getRawValueSync
-   */
   async getRawValue<K extends string & keyof Flags>(
     key: K,
     params?: CommonValueParams<Flags, K>
@@ -19,9 +15,6 @@ export class EnvironmentDriver<
     return this.getRawValueSync(key, params)
   }
 
-  /**
-   * Returns the value of the given environment variable name. Returns null if not found. All values are returned as strings if found.
-   */
   getRawValueSync<K extends string & keyof Flags>(
     key: K,
     params?: CommonValueParams<Flags, K>
@@ -29,17 +22,10 @@ export class EnvironmentDriver<
     return (process.env[key] as Flags[K]) ?? params?.defaultValue ?? null
   }
 
-  /**
-   * Returns all the environment variables
-   */
   getAllRawValuesSync(): Flags {
     return process.env as Flags
   }
 
-  /**
-   * Returns all the environment variables
-   * @alias getAllRawValuesSync
-   */
   async getAllRawValues(): Promise<Flags> {
     return this.getAllRawValuesSync()
   }

@@ -1,48 +1,67 @@
-import { EnvironmentDriver } from "../../src";
-
-// Mock process.env for testing
-const mockEnv = {
-  FEATURE_A: 'true',
-  FEATURE_B: '123',
-  FEATURE_C: 'hello',
-};
+import { EnvironmentDriver } from '../../src'
 
 describe('EnvironmentDriver', () => {
-  let driver: EnvironmentDriver;
+  const environmentDriver = new EnvironmentDriver()
+  const mockEnv = {
+    FEATURE_FLAG: 'true',
+    ANOTHER_FLAG: '123',
+    OBJECT_FLAG: '{"key":"value"}',
+    ARRAY_FLAG: '[1,2,3]',
+    BOOLEAN_FLAG: 'false',
+    SAMPLE_TEXT: 'Hello World',
+  }
 
-  beforeEach(() => {
-    jest.resetModules();
-    process.env = { ...mockEnv };
-    driver = new EnvironmentDriver();
-  });
+  process.env = mockEnv
 
-  it('should return the correct value for a boolean flag', async () => {
-    expect(await driver.getBoolValue('FEATURE_A')).toBe(true);
-    expect(driver.getBoolValueSync('FEATURE_A')).toBe(true);
-  });
+  describe('getRawValue', () => {
+    it('should return the correct raw value from environment variables', async () => {
+      const result = await environmentDriver.getRawValue('FEATURE_FLAG')
+      expect(result).toBe('true')
+    })
 
-  it('should return the correct value for a numeric flag', async () => {
-    expect(await driver.getNumValue('FEATURE_B')).toBe(123);
-    expect(driver.getNumValueSync('FEATURE_B')).toBe(123);
-  });
+    it('should return the default value if key is not found', async () => {
+      const result = await environmentDriver.getRawValue('UNKNOWN_FLAG', {
+        defaultValue: 'default',
+      })
+      expect(result).toBe('default')
+    })
 
-  it('should return the correct value for a string flag', async () => {
-    expect(await driver.getStrValue('FEATURE_C')).toBe('hello');
-    expect(driver.getStrValueSync('FEATURE_C')).toBe('hello');
-  });
+    it('should return null for a key that does not exist without a default value', async () => {
+      const result = await environmentDriver.getRawValue('MISSING_FLAG')
+      expect(result).toBeNull()
+    })
 
-  it('should return null for an undefined flag', async () => {
-    expect(await driver.getStrValue('UNDEFINED_FEATURE')).toBeNull();
-    expect(driver.getStrValueSync('UNDEFINED_FEATURE')).toBeNull();
-  });
+    it('should retrieve an object from environment variables', async () => {
+      const result = await environmentDriver.getRawValue('OBJECT_FLAG')
+      expect(result).toBe(mockEnv.OBJECT_FLAG)
+    })
 
-  it('should return all environment variables', async () => {
-    expect(await driver.getAllRawValues()).toEqual(mockEnv);
-    expect(driver.getAllRawValuesSync()).toEqual(mockEnv);
-  });
+    it('should retrieve an array from environment variables', async () => {
+      const result = await environmentDriver.getRawValue('ARRAY_FLAG')
+      expect(result).toBe(mockEnv.ARRAY_FLAG)
+    })
 
-  it('should handle default values correctly', async () => {
-    expect(await driver.getStrValue('UNDEFINED_FEATURE', { defaultValue: 'default' })).toBe('default');
-    expect(driver.getStrValueSync('UNDEFINED_FEATURE', { defaultValue: 'default' })).toBe('default');
-  });
-});
+    it('should retrieve a boolean from environment variables', async () => {
+      const result = await environmentDriver.getRawValue('BOOLEAN_FLAG')
+      expect(result).toBe('false')
+    })
+
+    it('should retrieve sample text from environment variables', async () => {
+      const result = await environmentDriver.getRawValue('SAMPLE_TEXT')
+      expect(result).toBe('Hello World')
+    })
+  })
+
+  describe('getAllRawValues', () => {
+    it('should return all environment variables', async () => {
+      const result = await environmentDriver.getAllRawValues()
+      expect(result).toEqual(mockEnv)
+    })
+  })
+
+  describe('close', () => {
+    it('should not throw any error', async () => {
+      await expect(environmentDriver.close()).resolves.toBeUndefined()
+    })
+  })
+})

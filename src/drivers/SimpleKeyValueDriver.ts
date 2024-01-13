@@ -15,10 +15,6 @@ export class SimpleKeyValueDriver<
     this.conf = conf
   }
 
-  /**
-   * Returns the value of the given environment variable name. Returns null if not found. All values are returned as strings if found.
-   * @alias getRawValueSync
-   */
   async getRawValue<K extends string & keyof Flags>(
     key: K,
     params?: CommonValueParams<Flags, K>
@@ -26,9 +22,6 @@ export class SimpleKeyValueDriver<
     return this.getRawValueSync(key, params)
   }
 
-  /**
-   * Returns the value of the given environment variable name. Returns null if not found. All values are returned as strings if found.
-   */
   getRawValueSync<K extends string & keyof Flags>(
     key: K,
     params?: CommonValueParams<Flags, K>
@@ -36,17 +29,10 @@ export class SimpleKeyValueDriver<
     return (this.conf[key] as Flags[K]) ?? params?.defaultValue ?? null
   }
 
-  /**
-   * Returns all the environment variables
-   */
   getAllRawValuesSync(): Flags {
     return this.conf as Flags
   }
 
-  /**
-   * Returns all the environment variables
-   * @alias getAllRawValuesSync
-   */
   async getAllRawValues(): Promise<Flags> {
     return this.getAllRawValuesSync()
   }

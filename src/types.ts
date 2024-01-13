@@ -1,70 +1,75 @@
 export type CommonValueParams<Flags, K extends keyof Flags> = {
   defaultValue?: Flags[K]
-  context?: any // Replace 'any' with the actual type for context if known
+  context?: any
 }
-
 export interface ISyncFeatureManager<
   Flags extends Record<string, any>,
   Context,
 > {
   /**
-   * Returns the value assigned to the key with a conversation attempt. Returns null if the value does not exist.
-   * Recommended that you use a specific getter instead of this one.
+   * Synchronously asserts and retrieves the value of a feature flag based on its key.
+   * Throws an error if the value doesn't exist.
+   * @param key The key of the feature flag.
+   * @param params Optional parameters including default value and context.
+   * @returns The value of the flag.
+   */
+  assertGetValueSync<K extends string & keyof Flags>(
+    key: K,
+    params?: CommonValueParams<Flags, K>
+  ): Flags[K]
+
+  /**
+   * Synchronously retrieves the value of a feature flag based on its key.
+   * @param key The key of the feature flag.
+   * @param params Optional parameters including default value and context.
+   * @returns The value of the flag, or null if not found.
    */
   getValueSync<K extends string & keyof Flags>(
     key: K,
     params?: CommonValueParams<Flags, K>
   ): Flags[K] | null
+
   /**
-   * Returns the value assigned to the key without any conversion. Returns null if the value does not exist.
-   **/
+   * Synchronously asserts and retrieves the raw value of a feature flag based on its key.
+   * Throws an error if the value doesn't exist.
+   * @param key The key of the feature flag.
+   * @param params Optional parameters including default value and context.
+   * @returns The raw value of the flag.
+   */
+  assertGetRawValueSync<K extends string & keyof Flags>(
+    key: K,
+    params?: CommonValueParams<Flags, K>
+  ): Flags[K]
+
+  /**
+
+   Synchronously retrieves the raw value of a feature flag based on its key.
+   @param key The key of the feature flag.
+   @param params Optional parameters including default value and context.
+   @returns The raw value of the flag, or null if not found.
+   */
   getRawValueSync<K extends string & keyof Flags>(
     key: K,
     params?: CommonValueParams<Flags, K>
   ): Flags[K] | null
-
   /**
-   * Returns the value assigned to the key as a boolean. If the value is not natively a boolean:
-   * - If the value is a string, it will return true if the string is "true" or "1", false otherwise
-   * - If the value is a number, it will return true if the number is 1, false otherwise
-   * - Returns false in all other cases
+
+   Synchronously retrieves all feature flag values.
+   @param params Optional parameters including context.
+   @returns An object with all flag values.
    */
-  getBoolValueSync<K extends string & keyof Flags>(
-    key: K,
-    params?: CommonValueParams<Flags, K>
-  ): boolean
-
+  getAllValuesSync(params?: { context?: Context }): Flags
   /**
-   * Returns the value assigned to the key as a string. Returns null if the value does not exist.
-   */
-  getStrValueSync<K extends string & keyof Flags>(
-    key: K,
-    params?: CommonValueParams<Flags, K>
-  ): string | null
 
-  /**
-   * Returns the value assigned to the key as an object. Returns null if the value does not exist or cannot be converted to an object.
-   */
-  getObjValueSync<K extends string & keyof Flags>(
-    key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Flags[K] | null
-
-  /**
-   * Returns the value assigned to the key as a number. Returns null if the value does not exist or cannot be converted to a number.
-   */
-  getNumValueSync<K extends string & keyof Flags>(
-    key: K,
-    params?: CommonValueParams<Flags, K>
-  ): number | null
-
-  /**
-   * Returns all data in their original stored format. Values may need to be converted to an expected type depending on the driver used.
+   Synchronously retrieves all raw feature flag values.
+   @param params Optional parameters including context.
+   @returns An object with all raw flag values.
    */
   getAllRawValuesSync(params?: { context?: Context }): Flags
-
   /**
-   * Closes the connection to the config manager
+
+   Closes the connection to the config manager.
+   @returns A Promise that resolves when the connection is closed.
    */
   close(): Promise<void>
 }
@@ -74,63 +79,68 @@ export interface IAsyncFeatureManager<
   Context,
 > {
   /**
-   * Returns the value assigned to the key with a conversation attempt. Returns null if the value does not exist.
-   * Recommended that you use a specific getter instead of this one.
+   * Asynchronously asserts and retrieves the value of a feature flag based on its key.
+   * Throws an error if the value doesn't exist.
+   * @param key The key of the feature flag.
+   * @param params Optional parameters including default value and context.
+   * @returns A Promise resolving to the value of the flag.
+   */
+  assertGetValue<K extends string & keyof Flags>(
+    key: K,
+    params?: CommonValueParams<Flags, K>
+  ): Promise<Flags[K]>
+
+  /**
+   * Asynchronously retrieves the value of a feature flag based on its key.
+   * @param key The key of the feature flag.
+   * @param params Optional parameters including default value and context.
+   * @returns A Promise resolving to the value of the flag, or null if not found.
    */
   getValue<K extends string & keyof Flags>(
     key: K,
     params?: CommonValueParams<Flags, K>
   ): Promise<Flags[K] | null>
+
   /**
-   * Returns the value assigned to the key without any conversion. Returns null if the value does not exist.
-   **/
+   * Asynchronously asserts and retrieves the raw value of a feature flag based on its key.
+   * Throws an error if the value doesn't exist.
+   * @param key The key of the feature flag.
+   * @param params Optional parameters including default value and context.
+   * @returns A Promise resolving to the raw value of the flag.
+   */
+  assertGetRawValue<K extends string & keyof Flags>(
+    key: K,
+    params?: CommonValueParams<Flags, K>
+  ): Promise<Flags[K]>
+
+  /**
+   * Asynchronously retrieves the raw value of a feature flag based on its key.
+   * @param key The key of the feature flag.
+   * @param params Optional parameters including default value and context.
+   * @returns A Promise resolving to the raw value of the flag, or null if not found.
+   */
   getRawValue<K extends string & keyof Flags>(
     key: K,
     params?: CommonValueParams<Flags, K>
   ): Promise<Flags[K] | null>
 
   /**
-   * Returns the value assigned to the key as a boolean. If the value is not natively a boolean:
-   * - If the value is a string, it will return true if the string is "true" or "1", false otherwise
-   * - If the value is a number, it will return true if the number is 1, false otherwise
-   * - Returns false in all other cases
+   * Asynchronously retrieves all feature flag values.
+   * @param params Optional parameters including context.
+   * @returns A Promise resolving to an object with all flag values.
    */
-  getBoolValue<K extends string & keyof Flags>(
-    key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Promise<boolean>
+  getAllValues(params?: { context?: Context }): Promise<Flags>
 
   /**
-   * Returns the value assigned to the key as a string. Returns null if the value does not exist.
-   */
-  getStrValue<K extends string & keyof Flags>(
-    key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Promise<string | null>
-
-  /**
-   * Returns the value assigned to the key as an object. Returns null if the value does not exist or cannot be converted to an object.
-   */
-  getObjValue<K extends string & keyof Flags>(
-    key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Promise<Flags[K] | null>
-
-  /**
-   * Returns the value assigned to the key as a number. Returns null if the value does not exist or cannot be converted to a number.
-   */
-  getNumValue<K extends string & keyof Flags>(
-    key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Promise<number | null>
-
-  /**
-   * Returns all data in their original stored format. Values may need to be converted to an expected type depending on the driver used.
+   * Asynchronously retrieves all raw feature flag values.
+   * @param params Optional parameters including context.
+   * @returns A Promise resolving to an object with all raw flag values.
    */
   getAllRawValues(params?: { context?: Context }): Promise<Flags>
 
   /**
-   * Closes the connection to the config manager
+   * Closes the connection to the config manager.
+   * @returns A Promise that resolves when the connection is closed.
    */
   close(): Promise<void>
 }

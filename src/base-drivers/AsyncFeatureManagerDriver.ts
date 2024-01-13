@@ -1,218 +1,108 @@
-import * as SJSON from 'secure-json-parse'
 import { CommonValueParams, IAsyncFeatureManager } from '../types'
+import { Conversion } from '../Conversion'
 
+/**
+ * A driver that supports only async operations.
+ */
 export abstract class AsyncFeatureManagerDriver<
   Flags extends Record<string, any> = Record<string, any>,
   Context = never,
 > implements IAsyncFeatureManager<Flags, Context>
 {
+  /**
+   * Closes the connection to the configuration manager.
+   * @returns A Promise that resolves when the connection is successfully closed.
+   */
+  abstract close(): Promise<void>
+
+  /**
+   * Asynchronously retrieves all feature flags in their original format.
+   * @param params Optional parameters including context.
+   * @returns A Promise resolving to an object containing all raw feature flag values.
+   */
   abstract getAllRawValues(params?: {
     context?: Context | undefined
   }): Promise<Flags>
-  abstract close(): Promise<void>
 
+  /**
+   * Asynchronously retrieves all feature flags, converting them to their appropriate types.
+   * @param params Optional parameters including context.
+   * @returns A Promise resolving to an object containing all feature flag values in their appropriate types.
+   */
+  async getAllValues(params?: { context?: Context }): Promise<Flags> {
+    const rawValues = await this.getAllRawValues(params)
+
+    const values: any = {}
+
+    for (const key in rawValues) {
+      values[key] = Conversion.toValue(rawValues[key])
+    }
+
+    return values
+  }
+
+  /**
+   * Asynchronously retrieves the raw value of a specific feature flag based on its key.
+   * @param key The key of the feature flag.
+   * @param params Optional parameters including default value and context.
+   * @returns A Promise resolving to the raw value of the flag, or null if not found.
+   */
   abstract getRawValue<K extends string & keyof Flags>(
     key: K,
     params?: CommonValueParams<Flags, K>
   ): Promise<Flags[K] | null>
 
-  async getBoolValue<K extends string & keyof Flags>(
+  /**
+   * Asynchronously asserts and retrieves the raw value of a specific feature flag based on its key.
+   * - Throws an error if the value is null, indicating that the flag does not exist.
+   * @param key The key of the feature flag.
+   * @param params Optional parameters including default value and context.
+   * @returns A Promise resolving to the raw value of the flag.
+   */
+  async assertGetRawValue<K extends string & keyof Flags>(
     key: K,
     params?: CommonValueParams<Flags, K>
-  ): Promise<boolean> {
+  ): Promise<Flags[K]> {
     const value = await this.getRawValue(key, params)
 
-    return this.toBoolean(value)
+    if (value === null) {
+      throw new Error(`Value for key ${key} does not exist`)
+    }
+
+    return value
   }
 
   /**
-   * Returns the value assigned to the key as a boolean. If the value is not natively a boolean:
-   * - If the value is a string, it will return true if the string is "true" or "1", false otherwise
-   * - If the value is a number, it will return true if the number is 1, false otherwise
-   * - Returns false in all other cases
+   * Asynchronously retrieves the value of a specific feature flag based on its key, converting it to its appropriate type.
+   * @param key The key of the feature flag.
+   * @param params Optional parameters including default value and context.
+   * @returns A Promise resolving to the value of the flag in its appropriate type, or null if not found.
    */
-  protected toBoolean(value: any): boolean {
-    if (typeof value === 'boolean') {
-      return value
-    }
-
-    if (typeof value === 'string') {
-      return value.toLowerCase() === 'true' || value === '1'
-    }
-
-    if (typeof value === 'number') {
-      return value === 1
-    }
-
-    return false
-  }
-
-  async getStrValue<K extends string & keyof Flags>(
-    key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Promise<string | null> {
-    const value = await this.getRawValue(key, params)
-    return this.toStr(value)
-  }
-
-  /**
-   * Converts a value to a string.
-   * - Returns null if the value is null or undefined.
-   * - Returns the string directly if the value is a string.
-   * - Converts and returns the value as a string if it's a number or boolean.
-   * - Converts and returns the JSON stringified value if it's an object.
-   */
-  protected toStr(value: any): string | null {
-    if (value === null || value === undefined) {
-      return null
-    }
-
-    if (typeof value === 'string') {
-      return value
-    }
-
-    if (typeof value === 'number') {
-      return value.toString()
-    }
-
-    if (typeof value === 'boolean') {
-      return value ? 'true' : 'false'
-    }
-
-    if (typeof value === 'object') {
-      return JSON.stringify(value)
-    }
-
-    return null
-  }
-
-  async getObjValue<K extends string & keyof Flags>(
-    key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Promise<Flags[K] | null> {
-    const value = await this.getRawValue(key, params)
-
-    return this.toObj<K>(value)
-  }
-
-  /**
-   * Converts a value to an object.
-   * - Returns null if the value is null or undefined.
-   * - Returns the value directly if it's an object.
-   * - Attempts to parse and return the value if it's a string (using secure-json-parse).
-   */
-  protected toObj<K extends keyof Flags>(value: any): Flags[K] | null {
-    if (value === null || value === undefined) {
-      return null
-    }
-
-    if (typeof value === 'object') {
-      return value
-    }
-
-    if (typeof value === 'string') {
-      try {
-        return SJSON.parse(value, null, {
-          protoAction: 'remove',
-          constructorAction: 'remove',
-        })
-      } catch (e) {
-        return null
-      }
-    }
-
-    return null
-  }
-
-  async getNumValue<K extends string & keyof Flags>(
-    key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Promise<number | null> {
-    const value = await this.getRawValue(key, params)
-
-    return this.toNum(value)
-  }
-
-  /**
-   * Converts a value to a number.
-   * - Returns null if the value is null, undefined, or a non-numeric string.
-   * - Returns the value directly if it's a number.
-   * - Converts and returns 1 or 0 if the value is a boolean.
-   */
-  protected toNum(value: any): number | null {
-    if (value === null || value === undefined) {
-      return null
-    }
-
-    if (typeof value === 'number') {
-      return value
-    }
-
-    if (typeof value === 'string') {
-      const val = Number(value)
-      if (isNaN(val)) {
-        return null
-      }
-
-      return val
-    }
-
-    if (typeof value === 'boolean') {
-      return value ? 1 : 0
-    }
-
-    return null
-  }
-
   async getValue<K extends string & keyof Flags>(
     key: K,
     params?: CommonValueParams<Flags, K>
   ): Promise<Flags[K] | null> {
     const value: any = await this.getRawValue(key, params)
-    return this.toValue<K>(value)
+    return Conversion.toValue<Flags, K>(value)
   }
 
   /**
-   * Converts a value to its corresponding type based on the flag key.
-   * - Returns null if the value is null or undefined.
-   * - Converts and returns the value based on its type (number, boolean, string, object).
-   * - Uses the appropriate conversion method (toNum, toBoolean, toStr, toObj) based on the type of the value.
-   * - Handles string values that can be converted to numbers, booleans, or objects.
+   * Asynchronously asserts and retrieves the value of a specific feature flag based on its key, converting it to its appropriate type.
+   * - Throws an error if the value is null, indicating that the flag does not exist.
+   * @param key The key of the feature flag.
+   * @param params Optional parameters including default value and context.
+   * @returns A Promise resolving to the value of the flag in its appropriate type.
    */
-  protected toValue<K extends keyof Flags>(value: any): Flags[K] | null {
-    if (value === null || value === undefined) {
-      return null
+  async assertGetValue<K extends string & keyof Flags>(
+    key: K,
+    params?: CommonValueParams<Flags, K>
+  ): Promise<Flags[K]> {
+    const value = await this.getValue(key, params)
+
+    if (value === null) {
+      throw new Error(`Value for key ${key} does not exist`)
     }
 
-    if (typeof value === 'number') {
-      return this.toNum(value) as Flags[K] | null
-    }
-
-    if (typeof value === 'boolean') {
-      return this.toBoolean(value) as Flags[K] | null
-    }
-
-    if (typeof value === 'string') {
-      if (!isNaN(Number(value))) {
-        return this.toNum(value) as Flags[K] | null
-      }
-
-      if (value.toLowerCase() === 'true' || value.toLowerCase() === 'false') {
-        return this.toBoolean(value) as Flags[K] | null
-      }
-
-      try {
-        JSON.parse(value)
-        return this.toObj<K>(value)
-      } catch (e) {
-        return this.toStr(value) as Flags[K] | null
-      }
-    }
-
-    if (typeof value === 'object') {
-      return this.toObj<K>(value)
-    }
-
-    return null
+    return value
   }
 }

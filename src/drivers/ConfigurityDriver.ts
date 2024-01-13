@@ -23,6 +23,10 @@ export class ConfigurityDriver<
    */
   private contextConfig: WeakMap<Context, ICerebroConfig<Flags>>
 
+  /**
+   * Takes in a Cerebro instance and uses it to generate configuration.
+   * Use loadConfigParser() to create a Cerebro instance.
+   */
   constructor(cerebro: Cerebro<Flags>) {
     super()
     this.cerebro = cerebro
@@ -30,9 +34,6 @@ export class ConfigurityDriver<
     this.contextConfig = new WeakMap()
   }
 
-  /**
-   * Gets the value for the given key. Returns null if the value does not exist.
-   */
   getRawValueSync<K extends string & keyof Flags>(
     key: K,
     params?: CommonValueParams<Flags, K> | undefined
@@ -46,24 +47,6 @@ export class ConfigurityDriver<
     return this.staticConfig.getRawValue(key) ?? params?.defaultValue ?? null
   }
 
-  /**
-   * Gets the value for the given key. Returns null if the value does not exist.
-   * @alias getRawValueSync
-   */
-  async getRawValue<K extends string & keyof Flags>(
-    key: K,
-    params?: {
-      defaultValue?: Flags[K]
-      context?: Context
-    }
-  ): Promise<Flags[K] | null> {
-    return this.getRawValueSync(key, params)
-  }
-
-  /**
-   * Returns all settings, or if specified
-   * all settings specific to a given label
-   */
   getAllRawValuesSync(params?: { context?: Context } | undefined): Flags {
     if (params?.context) {
       const config = this.getAndCacheContext(params.context)
@@ -74,15 +57,8 @@ export class ConfigurityDriver<
   }
 
   /**
-   * Returns all settings, or if specified
-   * all settings specific to a given label
-   *
-   * @alias getAllRawValuesSync
+   * Caches the config for a given context
    */
-  async getAllRawValues(params?: { context?: Context }): Promise<Flags> {
-    return this.getAllRawValuesSync(params)
-  }
-
   private getAndCacheContext(context: Context) {
     let config = this.contextConfig.get(context)
 
@@ -95,9 +71,6 @@ export class ConfigurityDriver<
     return config
   }
 
-  /**
-   * Does nothing in this driver.
-   */
   async close() {
     // Nothing to do here
     return
