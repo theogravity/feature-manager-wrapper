@@ -1,6 +1,6 @@
 import { CommonValueParams, IAsyncFeatureManager } from '../types'
 
-import { SyncFeatureManagerDriver } from '../base-drivers/SyncFeatureManagerDriver'
+import { AsyncFeatureManagerDriver } from '../base-drivers/AsyncFeatureManagerDriver'
 
 /**
  * Extend this class to create a feature manager that supports a driver supports only async operations.
@@ -11,9 +11,9 @@ export abstract class AsyncBaseFeatureManager<
   Context,
 > implements IAsyncFeatureManager<Flags, Context>
 {
-  private driver: SyncFeatureManagerDriver<Flags, Context>
+  private driver: AsyncFeatureManagerDriver<Flags, Context>
 
-  constructor(driver: SyncFeatureManagerDriver<Flags, Context>) {
+  constructor(driver: AsyncFeatureManagerDriver<Flags, Context>) {
     this.driver = driver
   }
 
@@ -57,7 +57,7 @@ export abstract class AsyncBaseFeatureManager<
     return this.driver.close()
   }
 
-  getDriver(): SyncFeatureManagerDriver<Flags, Context> {
+  getDriver(): AsyncFeatureManagerDriver<Flags, Context> {
     return this.driver
   }
 }
