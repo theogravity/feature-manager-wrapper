@@ -5,4 +5,7 @@ export * from './drivers/SimpleKeyValueDriver'
 export * from './base-drivers/SyncFeatureManagerDriver'
 export * from './base-drivers/AsyncFeatureManagerDriver'
 
+export * from './managers/AsyncBaseFeatureManager'
+export * from './managers/SyncBaseFeatureManager'
+
 export * from './types'

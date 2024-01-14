@@ -44,4 +44,12 @@ export class SimpleKeyValueDriver<
     // Nothing to do here
     return
   }
+
+  /**
+   * Does nothing in this driver
+   */
+  closeSync() {
+    // Nothing to do here
+    return
+  }
 }

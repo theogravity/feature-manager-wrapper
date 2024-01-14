@@ -21,6 +21,10 @@ class SimpleFeatureDriver<
     return
   }
 
+  closeSync() {
+    return
+  }
+
   getAllRawValuesSync(): Flags {
     return this.store
   }
@@ -102,6 +106,7 @@ describe('SyncFeatureManagerDriver', () => {
   describe('close', () => {
     it('should close without errors', async () => {
       await expect(driver.close()).resolves.toBeUndefined()
+      expect(driver.closeSync()).toBeUndefined()
     })
   })
 })

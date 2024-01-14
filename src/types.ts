@@ -71,7 +71,7 @@ export interface ISyncFeatureManager<
    Closes the connection to the config manager.
    @returns A Promise that resolves when the connection is closed.
    */
-  close(): Promise<void>
+  closeSync(): void
 }
 
 export interface IAsyncFeatureManager<

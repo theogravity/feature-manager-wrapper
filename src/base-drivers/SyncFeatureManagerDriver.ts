@@ -19,6 +19,12 @@ export abstract class SyncFeatureManagerDriver<
   abstract close(): Promise<void>
 
   /**
+   * Closes the connection to the configuration manager.
+   * @returns A Promise that resolves when the connection is successfully closed.
+   */
+  abstract closeSync(): void
+
+  /**
    * Synchronously retrieves all feature flags in their original format.
    * @param params Optional parameters including context.
    * @returns A Promise resolving to an object containing all raw feature flag values.

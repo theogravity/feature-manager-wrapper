@@ -37,4 +37,12 @@ export class EnvironmentDriver<
     // Nothing to do here
     return
   }
+
+  /**
+   * Does nothing in this driver
+   */
+  closeSync() {
+    // Nothing to do here
+    return
+  }
 }

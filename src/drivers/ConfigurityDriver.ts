@@ -72,7 +72,10 @@ export class ConfigurityDriver<
   }
 
   async close() {
-    // Nothing to do here
-    return
+    this.cerebro = null as any
+  }
+
+  closeSync() {
+    this.cerebro = null as any
   }
 }

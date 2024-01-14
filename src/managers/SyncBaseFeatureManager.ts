@@ -1,0 +1,110 @@
+import {
+  CommonValueParams,
+  IAsyncFeatureManager,
+  ISyncFeatureManager,
+} from '../types'
+
+import { SyncFeatureManagerDriver } from '../base-drivers/SyncFeatureManagerDriver'
+
+/**
+ * Extend this class to create a feature manager that supports a driver supports both sync and async operations.
+ * Acts as a facade for the underlying driver.
+ */
+export abstract class SyncBaseFeatureManager<
+    Flags extends Record<string, any>,
+    Context,
+  >
+  implements
+    IAsyncFeatureManager<Flags, Context>,
+    ISyncFeatureManager<Flags, Context>
+{
+  private driver: SyncFeatureManagerDriver<Flags, Context>
+
+  constructor(driver: SyncFeatureManagerDriver<Flags, Context>) {
+    this.driver = driver
+  }
+
+  async getValue<K extends string & keyof Flags>(
+    key: K,
+    params?: CommonValueParams<Flags, K>
+  ): Promise<Flags[K] | null> {
+    return this.driver.getValue(key, params)
+  }
+
+  async getAllValues(params?: { context?: Context }): Promise<Flags> {
+    return this.driver.getAllValues(params)
+  }
+
+  async getRawValue<K extends string & keyof Flags>(
+    key: K,
+    params?: CommonValueParams<Flags, K>
+  ): Promise<Flags[K] | null> {
+    return this.driver.getRawValue(key, params)
+  }
+
+  async getAllRawValues(params?: { context?: Context }): Promise<Flags> {
+    return this.driver.getAllRawValues(params)
+  }
+
+  async assertGetValue<K extends string & keyof Flags>(
+    key: K,
+    params?: CommonValueParams<Flags, K>
+  ): Promise<Flags[K]> {
+    return this.driver.assertGetValue(key, params)
+  }
+
+  async assertGetRawValue<K extends string & keyof Flags>(
+    key: K,
+    params?: CommonValueParams<Flags, K>
+  ): Promise<Flags[K]> {
+    return this.driver.assertGetRawValue(key, params)
+  }
+
+  async close(): Promise<void> {
+    return this.driver.close()
+  }
+
+  closeSync() {
+    return this.driver.closeSync()
+  }
+
+  getDriver(): SyncFeatureManagerDriver<Flags, Context> {
+    return this.driver
+  }
+
+  getRawValueSync<K extends string & keyof Flags>(
+    key: K,
+    params?: CommonValueParams<Flags, K>
+  ): Flags[K] | null {
+    return this.driver.getRawValueSync(key, params)
+  }
+
+  getAllRawValuesSync(params?: { context?: Context }): Flags {
+    return this.driver.getAllRawValuesSync(params)
+  }
+
+  getValueSync<K extends string & keyof Flags>(
+    key: K,
+    params?: CommonValueParams<Flags, K>
+  ): Flags[K] | null {
+    return this.driver.getValueSync(key, params)
+  }
+
+  getAllValuesSync(params?: { context?: Context }): Flags {
+    return this.driver.getAllValuesSync(params)
+  }
+
+  assertGetValueSync<K extends string & keyof Flags>(
+    key: K,
+    params?: CommonValueParams<Flags, K>
+  ): Flags[K] {
+    return this.driver.assertGetValueSync(key, params)
+  }
+
+  assertGetRawValueSync<K extends string & keyof Flags>(
+    key: K,
+    params?: CommonValueParams<Flags, K>
+  ): Flags[K] {
+    return this.driver.assertGetRawValueSync(key, params)
+  }
+}
