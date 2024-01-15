@@ -24,7 +24,7 @@ if (process.env.USE_LAUNCH_DARKLY) {
   driver = new LaunchDarklyServerDriver(...);
 }
 
-// MyFeatureManager is a facade for the underlying driver
+// Note: EnvironmentDriver supports both sync and async operations, but LaunchDarklyServerDriver only supports async operations, so you'll want to only use non-async methods.
 const featureManager = new AsyncFeatureManager(driver);
 
 // Get a feature flag
@@ -113,20 +113,22 @@ Determine if the feature manager you use is async or sync-based:
 - If not, then sync-based.
 
 - `LaunchDarklyServerDriver`: async
-- `EnvironmentDriver`: sync (+ async)
-- `ConfigurityDriver`: sync (+ async)
-- `SimpleKeyValueDriver`: sync (+ async)
+- `EnvironmentDriver`: sync (+ async supported)
+- `ConfigurityDriver`: sync (+ async supported)
+- `SimpleKeyValueDriver`: sync (+ async supported)
 
 ### Create an instance of the feature manager
 
 A feature manager uses one of the above drivers to interact with the specific feature manager service.
 
-- async drivers: `AsyncFeatureManager`
-  * Exposes async operations to fetch feature flags from remote endpoints
-  * You can only use async-based drivers with this feature manager (since your codebase would use async operations to access feature flags)
-- sync (+ async) drivers: `SyncFeatureManager`
-  * Exposes sync and async operations to fetch feature flags locally
-  * You can use both sync and async-based drivers with this feature manager
+- async (+ sync) drivers: `AsyncFeatureManager`
+  * Only exposes async operations to fetch feature flags from remote endpoints
+  * Can use both sync and async drivers (since sync drivers wrap sync operations in a promise for async operations), but operations are limited to async
+- sync drivers: `SyncFeatureManager`
+  * Exposes both sync and async operations to fetch feature flags locally
+
+*You can switch from `SyncFeatureManager` to `AsyncFeatureManager` if you need to use an async driver, but
+not the other way around as conversion to async methods would be necessary.*
 
 #### Example: LaunchDarkly (server-side SDK)
 
@@ -306,10 +308,14 @@ type CommonValueParams<Flags, K extends keyof Flags> = {
 
 ## Class: `AsyncFeatureManager`
 
+Use this class to ensure that your feature API calls are only async-based. This is useful if you want to ensure that your codebase is consistent with async operations.
+
+If you are switching to a driver that uses sync operations, you will need to update your feature manager to use the `SyncFeatureManager` class instead.
+
 ```typescript
 /**
- * Feature manager that supports a driver supports only async drivers.
- * Acts as a facade for the underlying driver.
+ * Feature manager that supports async and sync drivers.
+ * Acts as a facade for the underlying driver, and only exposes async operations.
  */
 class AsyncFeatureManager<
 Flags extends Record<string, any>,
@@ -464,7 +470,7 @@ Also includes the methods in `AsyncFeatureManager`.
 
 ```typescript
 /**
- * Feature manager that supports sync and async drivers.
+ * Feature manager that only supports sync drivers. Exposes both sync and async operations since async operations are just sync operations wrapped in a promise.
  * Acts as a facade for the underlying driver.
  */
 class SyncFeatureManager<

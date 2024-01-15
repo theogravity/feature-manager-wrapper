@@ -3,8 +3,8 @@ import { CommonValueParams } from '../types/common.types'
 import { IAsyncFeatureManager } from '../types/IAsyncFeatureManager'
 
 /**
- * Feature manager that supports only async drivers.
- * Acts as a facade for the underlying driver.
+ * Feature manager that supports async and sync drivers.
+ * Acts as a facade for the underlying driver, and only exposes async operations.
  */
 export class AsyncFeatureManager<Flags extends Record<string, any>, Context>
   implements IAsyncFeatureManager<Flags, Context>
