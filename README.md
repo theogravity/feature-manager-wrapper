@@ -228,13 +228,9 @@ const featureFlags: FeatureFlags = {
   }
 }
 
-class MyFeatureManager extends SyncFeatureManager<FeatureFlags> {
-  constructor() {
-    super(new SimpleKeyValueDriver<FeatureFlags>(featureFlags));
-  }
-}
+const driver = new SimpleKeyValueDriver<FeatureFlags>(featureFlags)
 
-const featureManager = new MyFeatureManager();
+const featureManager = new SyncFeatureManager<FeatureFlags>(driver);
 
 // Get a feature flag
 const myFeatureValue = await featureManager.getValue('featureFlag')
