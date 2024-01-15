@@ -1,7 +1,7 @@
 {
   "name": "feature-manager-wrapper",
-  "version": "0.0.4",
-  "description": "Abstraction layer for configuration / feature management systems",
+  "version": "1.0.0",
+  "description": "Abstraction layer for configuration / feature management systems and services",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "umd:main": "dist/umd/index.js",
@@ -33,6 +33,12 @@
     "launchdarkly",
     "abstraction",
     "wrapper",
+    "store",
+    "config",
+    "flag",
+    "analytics",
+    "conf",
+    "configuration",
     "configurity",
     "environment",
     "settings"
@@ -42,7 +48,7 @@
   "homepage": "https://github.com/theogravity/feature-management-wrapper",
   "repository": {
     "type": "git",
-    "url": "git@github.com:theogravity/config-layer.git"
+    "url": "git@github.com:theogravity/feature-management-wrapper.git"
   },
   "bugs": {
     "url": "https://github.com/theogravity/feature-management-wrapper/issues"

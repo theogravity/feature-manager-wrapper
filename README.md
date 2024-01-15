@@ -1,5 +1,7 @@
 # feature-manager-wrapper
 
+[![NPM version](https://img.shields.io/npm/v/feature-manager-wrapper.svg?style=flat-square)](https://www.npmjs.com/package/configurity) [![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](http://www.typescriptlang.org/)
+
 A wrapper / abstraction around configuration / feature manager libraries.
 
 Use cases:
@@ -7,7 +9,7 @@ Use cases:
 - Shift to using [`LaunchDarkly`](https://launchdarkly.com/) from `process.env` (or vice versa)
   * Also support for other feature managers such as [`Configurity`](https://github.com/theogravity/configurity)
 - Have a common interface for interacting with feature managers so if you need to swap out the underlying implementation, minimal changes would be required(*).
-  * (*) **Feature managers use `context` data differently (or not at all) for custom features and may require adjustments.**
+  * (*) *Feature managers use `context` data differently (or not at all) for custom features and may require adjustments.*
 
 ```typescript
 import { AsyncBaseFeatureManager, LaunchDarklyServerDriver } from 'feature-manager-wrapper';
@@ -37,6 +39,39 @@ const myFeatureValue = await featureManager.getValue('featureFlag', {
   defaultValue: true,
 })
 ```
+
+- [feature-manager-wrapper](#feature-manager-wrapper)
+  * [Installation](#installation)
+  * [Getting started](#getting-started)
+    + [(For Typescript users) Map out your feature flags](#-for-typescript-users--map-out-your-feature-flags)
+    + [Select the feature manager service driver to use](#select-the-feature-manager-service-driver-to-use)
+    + [Create a feature manager](#create-a-feature-manager)
+      - [Select the feature manager driver to use](#select-the-feature-manager-driver-to-use)
+      - [Create a feature manager class](#create-a-feature-manager-class)
+        * [Example: LaunchDarkly (server-side SDK)](#example--launchdarkly--server-side-sdk-)
+        * [Example: process.env](#example--processenv)
+        * [Example: Key / Value](#example--key---value)
+        * [Example: Configurity](#example--configurity)
+  * [API](#api)
+    + [Interface: 'CommonValueParams'](#interface---commonvalueparams-)
+    + [Class: `AsyncBaseFeatureManager`](#class---asyncbasefeaturemanager-)
+      - [`constructor()`](#-constructor---)
+      - [`assertGetValue()`](#-assertgetvalue---)
+      - [`getValue()`](#-getvalue---)
+      - [`assertGetRawValue()`](#-assertgetrawvalue---)
+      - [`getRawValue()`](#-getrawvalue---)
+      - [`getAllValues()`](#-getallvalues---)
+      - [`getAllRawValues()`](#-getallrawvalues---)
+      - [`close()`](#-close---)
+    + [Class: `SyncBaseFeatureManager`](#class---syncbasefeaturemanager-)
+      - [`constructor()`](#-constructor----1)
+      - [`assertGetValueSync()`](#-assertgetvaluesync---)
+      - [`getValueSync()`](#-getvaluesync---)
+      - [`assertGetRawValueSync()`](#-assertgetrawvaluesync---)
+      - [`getRawValueSync()`](#-getrawvaluesync---)
+      - [`getAllValuesSync()`](#-getallvaluessync---)
+      - [`getAllRawValuesSync()`](#-getallrawvaluessync---)
+      - [`closeSync()`](#-closesync---)
 
 ## Installation
 
