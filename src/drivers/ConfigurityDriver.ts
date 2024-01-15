@@ -1,6 +1,7 @@
 import { Cerebro, ICerebroConfig } from 'configurity'
 import { SyncFeatureManagerDriver } from '../base-drivers/SyncFeatureManagerDriver'
-import { CommonValueParams } from '../types'
+
+import { CommonValueParams } from '../types/common.types'
 
 /**
  * Driver for the configurity configuration library. Supports both

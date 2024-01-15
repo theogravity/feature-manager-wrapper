@@ -1,5 +1,5 @@
-import { CommonValueParams } from '../types'
 import { SyncFeatureManagerDriver } from '../base-drivers/SyncFeatureManagerDriver'
+import { CommonValueParams } from '../types/common.types'
 
 /**
  * Uses process.env to get the values. Supports sync and async operations.

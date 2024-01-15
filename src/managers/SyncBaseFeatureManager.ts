@@ -1,10 +1,8 @@
-import {
-  CommonValueParams,
-  IAsyncFeatureManager,
-  ISyncFeatureManager,
-} from '../types'
+import { ISyncFeatureManager } from '../types/ISyncFeatureManager'
 
 import { SyncFeatureManagerDriver } from '../base-drivers/SyncFeatureManagerDriver'
+import { CommonValueParams } from '../types/common.types'
+import { IAsyncFeatureManager } from '../types/IAsyncFeatureManager'
 
 /**
  * Extend this class to create a feature manager that supports a driver supports both sync and async operations.
@@ -20,6 +18,9 @@ export abstract class SyncBaseFeatureManager<
 {
   private driver: SyncFeatureManagerDriver<Flags, Context>
 
+  /**
+   * @param driver The driver to use for interacting with the feature manager service.
+   */
   constructor(driver: SyncFeatureManagerDriver<Flags, Context>) {
     this.driver = driver
   }

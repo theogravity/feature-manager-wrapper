@@ -1,5 +1,6 @@
-import { CommonValueParams, IAsyncFeatureManager } from '../types'
 import { Conversion } from '../Conversion'
+import { CommonValueParams } from '../types/common.types'
+import { IAsyncFeatureManager } from '../types/IAsyncFeatureManager'
 
 /**
  * A driver that supports only async operations.

@@ -8,4 +8,6 @@ export * from './base-drivers/AsyncFeatureManagerDriver'
 export * from './managers/AsyncBaseFeatureManager'
 export * from './managers/SyncBaseFeatureManager'
 
-export * from './types'
+export * from './types/ISyncFeatureManager'
+export { CommonValueParams } from './types/common.types'
+export { IAsyncFeatureManager } from './types/IAsyncFeatureManager'

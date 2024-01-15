@@ -1,6 +1,7 @@
-import { CommonValueParams, ISyncFeatureManager } from '../types'
+import { ISyncFeatureManager } from '../types/ISyncFeatureManager'
 import { AsyncFeatureManagerDriver } from './AsyncFeatureManagerDriver'
 import { Conversion } from '../Conversion'
+import { CommonValueParams } from '../types/common.types'
 
 /**
  * A driver that supports both sync and async operations

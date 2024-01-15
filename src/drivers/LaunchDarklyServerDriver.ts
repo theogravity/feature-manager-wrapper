@@ -1,7 +1,8 @@
 import type { LDClient } from '@launchdarkly/node-server-sdk'
 import type { LDContext } from '@launchdarkly/js-sdk-common'
 import { AsyncFeatureManagerDriver } from '../base-drivers/AsyncFeatureManagerDriver'
-import { CommonValueParams } from '../types'
+
+import { CommonValueParams } from '../types/common.types'
 
 /**
  * Driver for the LaunchDarkly server SDK. Only supports async operations.
@@ -13,6 +14,11 @@ export class LaunchDarklyServerDriver<
   client: LDClient
   defaultContext: LDContext
 
+  /**
+   * Creates a new LaunchDarkly driver instance.
+   * @param client The LaunchDarkly driver
+   * @param defaultContext The default LaunchDarkly context to use when fetching feature flags.
+   */
   constructor(client: LDClient, defaultContext: LDContext) {
     super()
     this.client = client
