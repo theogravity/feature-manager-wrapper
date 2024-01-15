@@ -14,24 +14,18 @@ Use cases:
 ```typescript
 // See examples in documentation for working examples
 // This example is for illustrative purposes only
-import { AsyncBaseFeatureManager, LaunchDarklyServerDriver } from 'feature-manager-wrapper';
+import { AsyncFeatureManager, LaunchDarklyServerDriver } from 'feature-manager-wrapper';
 
-class MyFeatureManager extends AsyncBaseFeatureManager {
-  constructor(useLaunchDarkly: boolean) {
-    // By default, use process.env to maintain our feature flags
-    let driver = new EnvironmentDriver();
-    
-    if (useLaunchDarkly) {
-      // Use LaunchDarkly to maintain our feature flags
-      driver = new LaunchDarklyServerDriver(...);
-    }
+// By default, use process.env to maintain our feature flags
+let driver = new EnvironmentDriver();
 
-    super(driver);
-  }
+if (process.env.USE_LAUNCH_DARKLY) {
+  // Use LaunchDarkly to maintain our feature flags
+  driver = new LaunchDarklyServerDriver(...);
 }
 
 // MyFeatureManager is a facade for the underlying driver
-const featureManager = new MyFeatureManager();
+const featureManager = new AsyncFeatureManager(driver);
 
 // Get a feature flag
 const myFeatureValue = await featureManager.getValue('featureFlag', {
@@ -58,7 +52,7 @@ const myFeatureValue = await featureManager.getValue('featureFlag', {
       - [Example: Configurity](#example-configurity)
 - [API](#api)
   - [Interface: 'CommonValueParams'](#interface-commonvalueparams)
-  - [Class: `AsyncBaseFeatureManager`](#class-asyncbasefeaturemanager)
+  - [Class: `AsyncFeatureManager`](#class-AsyncFeatureManager)
     - [`constructor()`](#constructor)
     - [`assertGetValue()`](#assertgetvalue)
     - [`getValue()`](#getvalue)
@@ -67,7 +61,7 @@ const myFeatureValue = await featureManager.getValue('featureFlag', {
     - [`getAllValues()`](#getallvalues)
     - [`getAllRawValues()`](#getallrawvalues)
     - [`close()`](#close)
-  - [Class: `SyncBaseFeatureManager`](#class-syncbasefeaturemanager)
+  - [Class: `SyncFeatureManager`](#class-SyncFeatureManager)
     - [`constructor()`](#constructor)
     - [`assertGetValueSync()`](#assertgetvaluesync)
     - [`getValueSync()`](#getvaluesync)
@@ -123,16 +117,14 @@ Determine if the feature manager you use is async or sync-based:
 - `ConfigurityDriver`: sync (+ async)
 - `SimpleKeyValueDriver`: sync (+ async)
 
-### Create a feature manager class
+### Create an instance of the feature manager
 
-A feature manager class provides the abstraction to work with feature flags and uses one of the above drivers to interact with the specific feature manager service.
- 
-You will extend one of the managers below to create your own feature manager.
+A feature manager uses one of the above drivers to interact with the specific feature manager service.
 
-- async: `AsyncBaseFeatureManager`
+- async drivers: `AsyncFeatureManager`
   * Exposes async operations to fetch feature flags from remote endpoints
   * You can only use async-based drivers with this feature manager (since your codebase would use async operations to access feature flags)
-- sync (+ async): `SyncBaseFeatureManager`
+- sync (+ async) drivers: `SyncFeatureManager`
   * Exposes sync and async operations to fetch feature flags locally
   * You can use both sync and async-based drivers with this feature manager
 
@@ -140,10 +132,10 @@ You will extend one of the managers below to create your own feature manager.
 
 [`LaunchDarkly`](https://launchdarkly.com/) is async-based since we call remote endpoints in the `LaunchDarkly` SDK to fetch feature flags.
 
-Because it's async-based, we use the `AsyncBaseFeatureManager` to create our own feature manager.
+Because it's async-based, we use the `AsyncFeatureManager` to create our own feature manager.
 
 ```typescript
-import { AsyncBaseFeatureManager, LaunchDarklyServerDriver } from 'feature-manager-wrapper';
+import { AsyncFeatureManager, LaunchDarklyServerDriver } from 'feature-manager-wrapper';
 import { LDClient, LDContext } from "@launchdarkly/node-server-sdk";
 
 interface FeatureFlags {
@@ -154,17 +146,12 @@ interface FeatureFlags {
   };
 }
 
-// The generics are <Flags, Context Format>
-// Flags: the interface that maps out the available feature flags
-// Context: the interface that maps out the context data to pass to LaunchDarkly
-class MyFeatureManager extends AsyncBaseFeatureManager<FeatureFlags, LDContext> {
-  constructor(launchDarklyClient: LDClient, defaultContext: LDContext) {
-    // Set the LaunchDarkly server driver to the feature manager
-    super(new LaunchDarklyServerDriver<FeatureFlags, LDContext>(launchDarklyClient, defaultContext));
-  }
-}
+// Create your LaunchDarkly client
+const launchDarklyClient = LDClient.initialize('sdk-key')
 
-const featureManager = new MyFeatureManager();
+const driver = new LaunchDarklyServerDriver<FeatureFlags, LDContext>(launchDarklyClient, defaultContext)
+
+const featureManager = new AsyncFeatureManager<FeatureFlags, LDContext>(driver);
 
 // Get a feature flag
 const myFeatureValue = await featureManager.getValue('featureFlag')
@@ -188,10 +175,10 @@ await featureManager.close()
 
 `process.env` is sync-based since we access the environment variables synchronously.
 
-Because it's sync-based, we use the `SyncBaseFeatureManager` to create our own feature manager.
+Because it's sync-based, we use the `SyncFeatureManager` to create our own feature manager.
 
 ```typescript
-import { AsyncBaseFeatureManager, EnvironmentDriver } from 'feature-manager-wrapper';
+import { SyncFeatureManager, EnvironmentDriver } from 'feature-manager-wrapper';
 
 // maps to process.env variables
 interface FeatureFlags {
@@ -202,13 +189,9 @@ interface FeatureFlags {
   };
 }
 
-class MyFeatureManager extends SyncBaseFeatureManager<FeatureFlags> {
-  constructor() {
-    super(new EnvironmentDriver<FeatureFlags>());
-  }
-}
+const driver = new EnvironmentDriver<FeatureFlags>()
 
-const featureManager = new MyFeatureManager();
+const featureManager = new SyncFeatureManager<FeatureFlags>(driver);
 
 // Get a feature flag
 const myFeatureValue = await featureManager.getValue('FEATURE_FLAG')
@@ -224,10 +207,10 @@ const myFeatureValueSync = featureManager.getValueSync('FEATURE_FLAG', {
 
 Key / Value is sync-based since we access the key / value mapping synchronously.
 
-Because it's sync-based, we use the `SyncBaseFeatureManager` to create our own feature manager.
+Because it's sync-based, we use the `SyncFeatureManager` to create our own feature manager.
 
 ```typescript
-import { SyncBaseFeatureManager, SimpleKeyValueDriver } from 'feature-manager-wrapper';
+import { SyncFeatureManager, SimpleKeyValueDriver } from 'feature-manager-wrapper';
 
 interface FeatureFlags {
   featureFlag: boolean;
@@ -245,7 +228,7 @@ const featureFlags: FeatureFlags = {
   }
 }
 
-class MyFeatureManager extends SyncBaseFeatureManager<FeatureFlags> {
+class MyFeatureManager extends SyncFeatureManager<FeatureFlags> {
   constructor() {
     super(new SimpleKeyValueDriver<FeatureFlags>(featureFlags));
   }
@@ -262,10 +245,10 @@ const myFeatureValueSync = featureManager.getValueSync('featureFlag')
 
 [`Configurity`](https://github.com/theogravity/configurity) is sync-based since we access the config synchronously.
 
-Because it's sync-based, we use the `SyncBaseFeatureManager` to create our own feature manager.
+Because it's sync-based, we use the `SyncFeatureManager` to create our own feature manager.
 
 ```typescript
-import { SyncBaseFeatureManager, ConfigurityDriver } from 'feature-manager-wrapper';
+import { SyncFeatureManager, ConfigurityDriver } from 'feature-manager-wrapper';
 import { loadConfigParser } from 'configurity'
 
 interface FeatureFlags {
@@ -281,19 +264,15 @@ interface ConfigurityContext {
   environment?: string
 }
 
-class MyFeatureManager extends SyncBaseFeatureManager<FeatureFlags, ConfigurityContext> {
-  constructor() {
-    // Load the config file
-    const YML_PATH = path.join(__dirname, '..', '__fixtures__', 'configurity.yml')
+// Load the config file
+const YML_PATH = path.join(__dirname, '..', '__fixtures__', 'configurity.yml')
 
-    // Get the configurity config parser
-    const configParser = loadConfigParser<FeatureFlags>(YML_PATH)
-  
-    super(new ConfigurityDriver<FeatureFlags, ConfigurityContext>(configParser));
-  }
-}
+// Get the configurity config parser
+const configParser = loadConfigParser<FeatureFlags>(YML_PATH)
 
-const featureManager = new MyFeatureManager();
+const driver = new ConfigurityDriver<FeatureFlags, ConfigurityContext>(configParser)
+
+const featureManager = new SyncFeatureManager<FeatureFlags, ConfigurityContext>();
 
 // Get a feature flag
 const myFeatureValue = await featureManager.getValue('featureFlag')
@@ -317,7 +296,7 @@ Most of the API methods in the feature manager has an optional `params` paramete
 /**
  * Common optional parameters for retrieving a flag.
  */
-export type CommonValueParams<Flags, K extends keyof Flags> = {
+type CommonValueParams<Flags, K extends keyof Flags> = {
   /**
    * The default value to use if the flag is not found.
    */
@@ -329,16 +308,14 @@ export type CommonValueParams<Flags, K extends keyof Flags> = {
 }
 ```
 
-## Class: `AsyncBaseFeatureManager`
-
-Must be extended via another class to be used.
+## Class: `AsyncFeatureManager`
 
 ```typescript
 /**
- * Extend this class to create a feature manager that supports a driver supports only async operations.
+ * Feature manager that supports a driver supports only async drivers.
  * Acts as a facade for the underlying driver.
  */
-abstract class AsyncBaseFeatureManager<
+class AsyncFeatureManager<
 Flags extends Record<string, any>,
 Context extends Record<string, any> = Record<string, any>
 ```
@@ -485,18 +462,16 @@ constructor(driver: AsyncFeatureManagerDriver<Flags, Context>)
   close(): Promise<void>
 ```
 
-## Class: `SyncBaseFeatureManager`
+## Class: `SyncFeatureManager`
 
-Must be extended via another class to be used.
-
-Also includes the methods in `AsyncBaseFeatureManager`.
+Also includes the methods in `AsyncFeatureManager`.
 
 ```typescript
 /**
- * Extend this class to create a feature manager that supports a driver supports both sync and async operations.
+ * Feature manager that supports sync and async drivers.
  * Acts as a facade for the underlying driver.
  */
-export abstract class SyncBaseFeatureManager<
+class SyncFeatureManager<
     Flags extends Record<string, any>,
     Context,
   >
