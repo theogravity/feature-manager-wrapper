@@ -40,46 +40,50 @@ const myFeatureValue = await featureManager.getValue('featureFlag', {
 })
 ```
 
-## Table of contents
+# Table of contents
 
 - [feature-manager-wrapper](#feature-manager-wrapper)
-  - [Installation](#installation)
-  - [Getting started](#getting-started)
-    - [(For Typescript users) Map out your feature flags](#for-typescript-users-map-out-your-feature-flags)
-    - [Select the feature manager service driver to use](#select-the-feature-manager-service-driver-to-use)
-    - [Create a feature manager](#create-a-feature-manager)
-      - [Select the feature manager driver to use](#select-the-feature-manager-driver-to-use)
-      - [Create a feature manager class](#create-a-feature-manager-class)
-  - [API](#api)
-    - [Interface: 'CommonValueParams'](#interface-commonvalueparams)
-    - [Class: `AsyncBaseFeatureManager`](#class-asyncbasefeaturemanager)
-      - [`constructor()`](#constructor)
-      - [`assertGetValue()`](#assertgetvalue)
-      - [`getValue()`](#getvalue)
-      - [`assertGetRawValue()`](#assertgetrawvalue)
-      - [`getRawValue()`](#getrawvalue)
-      - [`getAllValues()`](#getallvalues)
-      - [`getAllRawValues()`](#getallrawvalues)
-      - [`close()`](#close)
-    - [Class: `SyncBaseFeatureManager`](#class-syncbasefeaturemanager)
-      - [`constructor()`](#constructor)
-      - [`assertGetValueSync()`](#assertgetvaluesync)
-      - [`getValueSync()`](#getvaluesync)
-      - [`assertGetRawValueSync()`](#assertgetrawvaluesync)
-      - [`getRawValueSync()`](#getrawvaluesync)
-      - [`getAllValuesSync()`](#getallvaluessync)
-      - [`getAllRawValuesSync()`](#getallrawvaluessync)
-      - [`closeSync()`](#closesync)
+- [Installation](#installation)
+- [Getting started](#getting-started)
+  - [(For Typescript users) Map out your feature flags](#for-typescript-users-map-out-your-feature-flags)
+  - [Select the feature manager service driver to use](#select-the-feature-manager-service-driver-to-use)
+  - [Create a feature manager](#create-a-feature-manager)
+    - [Select the feature manager driver to use](#select-the-feature-manager-driver-to-use)
+    - [Create a feature manager class](#create-a-feature-manager-class)
+      - [Example: LaunchDarkly (server-side SDK)](#example-launchdarkly-server-side-sdk)
+      - [Example: process.env](#example-processenv)
+      - [Example: Key / Value](#example-key--value)
+      - [Example: Configurity](#example-configurity)
+- [API](#api)
+  - [Interface: 'CommonValueParams'](#interface-commonvalueparams)
+  - [Class: `AsyncBaseFeatureManager`](#class-asyncbasefeaturemanager)
+    - [`constructor()`](#constructor)
+    - [`assertGetValue()`](#assertgetvalue)
+    - [`getValue()`](#getvalue)
+    - [`assertGetRawValue()`](#assertgetrawvalue)
+    - [`getRawValue()`](#getrawvalue)
+    - [`getAllValues()`](#getallvalues)
+    - [`getAllRawValues()`](#getallrawvalues)
+    - [`close()`](#close)
+  - [Class: `SyncBaseFeatureManager`](#class-syncbasefeaturemanager)
+    - [`constructor()`](#constructor)
+    - [`assertGetValueSync()`](#assertgetvaluesync)
+    - [`getValueSync()`](#getvaluesync)
+    - [`assertGetRawValueSync()`](#assertgetrawvaluesync)
+    - [`getRawValueSync()`](#getrawvaluesync)
+    - [`getAllValuesSync()`](#getallvaluessync)
+    - [`getAllRawValuesSync()`](#getallrawvaluessync)
+    - [`closeSync()`](#closesync)
 
-## Installation
+# Installation
 
 ```bash
 $ npm install feature-manager-wrapper
 ```
 
-## Getting started
+# Getting started
 
-### (For Typescript users) Map out your feature flags
+## (For Typescript users) Map out your feature flags
 
 Create an interface that maps out the available feature flags. They will
 be used for IDE autocompletion when working with the feature manager.
@@ -94,7 +98,7 @@ interface FeatureFlags {
 }
 ```
 
-### Select the feature manager service driver to use
+## Select the feature manager service driver to use
 
 `feature-management-wrapper` currently supports the following feature managers:
 
@@ -103,9 +107,9 @@ interface FeatureFlags {
 - `configurity`: `ConfigurityDriver`
 - key / value (where you have a KV mapping from an external source): `SimpleKeyValueDriver`
 
-### Create a feature manager
+## Create a feature manager
 
-#### Select the feature manager driver to use
+### Select the feature manager driver to use
 
 Determine if the feature manager you use is async or sync-based:
 
@@ -117,7 +121,7 @@ Determine if the feature manager you use is async or sync-based:
 - `ConfigurityDriver`: sync (+ async)
 - `SimpleKeyValueDriver`: sync (+ async)
 
-#### Create a feature manager class
+### Create a feature manager class
 
 A feature manager class provides the abstraction to work with feature flags and uses one of the above drivers to interact with the specific feature manager service.
  
@@ -130,7 +134,7 @@ You will extend one of the managers below to create your own feature manager.
   * Exposes sync and async operations to fetch feature flags locally
   * You can use both sync and async-based drivers with this feature manager
 
-##### Example: LaunchDarkly (server-side SDK)
+#### Example: LaunchDarkly (server-side SDK)
 
 [`LaunchDarkly`](https://launchdarkly.com/) is async-based since we call remote endpoints in the `LaunchDarkly` SDK to fetch feature flags.
 
@@ -178,7 +182,7 @@ const myFeatureValueFromContext = await featureManager.getValue('featureFlag', {
 await featureManager.close()
 ```
 
-##### Example: process.env
+#### Example: process.env
 
 `process.env` is sync-based since we access the environment variables synchronously.
 
@@ -214,7 +218,7 @@ const myFeatureValueSync = featureManager.getValueSync('FEATURE_FLAG', {
 })
 ```
 
-##### Example: Key / Value
+#### Example: Key / Value
 
 Key / Value is sync-based since we access the key / value mapping synchronously.
 
@@ -252,7 +256,7 @@ const myFeatureValue = await featureManager.getValue('featureFlag')
 const myFeatureValueSync = featureManager.getValueSync('featureFlag')
 ```
 
-##### Example: Configurity
+#### Example: Configurity
 
 [`Configurity`](https://github.com/theogravity/configurity) is sync-based since we access the config synchronously.
 
@@ -301,9 +305,9 @@ const myFeatureValueSync = featureManager.getValueSync('featureFlag', {
 })
 ```
 
-## API
+# API
 
-### Interface: 'CommonValueParams'
+## Interface: 'CommonValueParams'
 
 Most of the API methods in the feature manager has an optional `params` parameter that can be passed to the method.
 
@@ -323,7 +327,7 @@ export type CommonValueParams<Flags, K extends keyof Flags> = {
 }
 ```
 
-### Class: `AsyncBaseFeatureManager`
+## Class: `AsyncBaseFeatureManager`
 
 Must be extended via another class to be used.
 
@@ -341,7 +345,7 @@ Generic types:
   - `Flags` (optional): the interface that maps out the available feature flags
   - `Context` (optional): the interface that maps out the context data that can be passed when fetching feature flags. Must be supported by the underlying driver.
 
-#### `constructor()`
+### `constructor()`
 
 ```typescript
 /**
@@ -350,7 +354,7 @@ Generic types:
 constructor(driver: AsyncFeatureManagerDriver<Flags, Context>)
 ```
 
-#### `assertGetValue()`
+### `assertGetValue()`
 
 ```typescript
 /**
@@ -375,7 +379,7 @@ constructor(driver: AsyncFeatureManagerDriver<Flags, Context>)
 ): Promise<Flags[K]>
 ```
 
-#### `getValue()`
+### `getValue()`
 
 ```typescript
   /**
@@ -401,7 +405,7 @@ constructor(driver: AsyncFeatureManagerDriver<Flags, Context>)
 ): Promise<Flags[K]>
 ```
 
-#### `assertGetRawValue()`
+### `assertGetRawValue()`
 
 ```typescript
 /**
@@ -418,7 +422,7 @@ constructor(driver: AsyncFeatureManagerDriver<Flags, Context>)
   ): Promise<Flags[K]>
 ```
 
-#### `getRawValue()`
+### `getRawValue()`
 
 ```typescript
   /**
@@ -434,7 +438,7 @@ constructor(driver: AsyncFeatureManagerDriver<Flags, Context>)
   ): Promise<Flags[K] | null>
 ```
 
-#### `getAllValues()`
+### `getAllValues()`
 
 ```typescript
   /**
@@ -456,7 +460,7 @@ constructor(driver: AsyncFeatureManagerDriver<Flags, Context>)
   getAllValues(params?: { context?: Context }): Promise<Flags>
 ```
 
-#### `getAllRawValues()`
+### `getAllRawValues()`
 
 ```typescript
   /**
@@ -468,7 +472,7 @@ constructor(driver: AsyncFeatureManagerDriver<Flags, Context>)
   getAllRawValues(params?: { context?: Context }): Promise<Flags>
 ```
 
-#### `close()`
+### `close()`
 
 ```typescript
   /**
@@ -479,7 +483,7 @@ constructor(driver: AsyncFeatureManagerDriver<Flags, Context>)
   close(): Promise<void>
 ```
 
-### Class: `SyncBaseFeatureManager`
+## Class: `SyncBaseFeatureManager`
 
 Must be extended via another class to be used.
 
@@ -500,7 +504,7 @@ Generic types:
   - `Flags` (optional): the interface that maps out the available feature flags
   - `Context` (optional): the interface that maps out the context data that can be passed when fetching feature flags. Must be supported by the underlying driver.
 
-#### `constructor()`
+### `constructor()`
 
 ```typescript
 /**
@@ -509,7 +513,7 @@ Generic types:
 constructor(driver: SyncFeatureManagerDriver<Flags, Context>)
 ```
 
-#### `assertGetValueSync()`
+### `assertGetValueSync()`
 
 ```typescript
   /**
@@ -534,7 +538,7 @@ assertGetValueSync<K extends string & keyof Flags>(
 ): Flags[K]
 ```
 
-#### `getValueSync()`
+### `getValueSync()`
 
 ```typescript
 /**
@@ -560,7 +564,7 @@ assertGetValueSync<K extends string & keyof Flags>(
   ): Flags[K] | null
 ```
 
-#### `assertGetRawValueSync()`
+### `assertGetRawValueSync()`
 
 ```typescript
   /**
@@ -578,7 +582,7 @@ assertGetRawValueSync<K extends string & keyof Flags>(
 ): Flags[K]
 ```
 
-#### `getRawValueSync()`
+### `getRawValueSync()`
 
 ```typescript
 /**
@@ -594,7 +598,7 @@ assertGetRawValueSync<K extends string & keyof Flags>(
   ): Flags[K] | null
 ```
 
-#### `getAllValuesSync()`
+### `getAllValuesSync()`
 
 ```typescript
 /**
@@ -616,7 +620,7 @@ assertGetRawValueSync<K extends string & keyof Flags>(
   getAllValuesSync(params?: { context?: Context }): Flags
 ```
 
-#### `getAllRawValuesSync()`
+### `getAllRawValuesSync()`
 
 ```typescript
 /**
@@ -628,7 +632,7 @@ assertGetRawValueSync<K extends string & keyof Flags>(
   getAllRawValuesSync(params?: { context?: Context }): Flags
 ```
 
-#### `closeSync()`
+### `closeSync()`
 
 ```typescript
   /**
