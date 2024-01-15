@@ -12,6 +12,8 @@ Use cases:
   * (*) *Feature managers use `context` data differently (or not at all) for custom features and may require adjustments.*
 
 ```typescript
+// See examples in documentation for working examples
+// This example is for illustrative purposes only
 import { AsyncBaseFeatureManager, LaunchDarklyServerDriver } from 'feature-manager-wrapper';
 
 class MyFeatureManager extends AsyncBaseFeatureManager {
@@ -21,7 +23,7 @@ class MyFeatureManager extends AsyncBaseFeatureManager {
     
     if (useLaunchDarkly) {
       // Use LaunchDarkly to maintain our feature flags
-      driver = new LaunchDarklyServerDriver();
+      driver = new LaunchDarklyServerDriver(...);
     }
 
     super(driver);
