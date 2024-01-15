@@ -112,6 +112,8 @@ Determine if the feature manager you use is async or sync-based:
 - If the APIs you call require `await` to get your feature flags, then it would be async-based.
 - If not, then sync-based.
 
+Drivers and their (a)sync type:
+
 - `LaunchDarklyServerDriver`: async
 - `EnvironmentDriver`: sync (+ async supported)
 - `ConfigurityDriver`: sync (+ async supported)
