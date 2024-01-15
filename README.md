@@ -175,6 +175,9 @@ const myFeatureValueFromContext = await featureManager.getValue('featureFlag', {
   // optional default value
   defaultValue: true,
 })
+
+// Close the connection to the LaunchDarkly service
+await featureManager.close()
 ```
 
 ##### Example: process.env
