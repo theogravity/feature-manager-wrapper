@@ -37,7 +37,7 @@ export class ConfigurityDriver<
 
   getRawValueSync<K extends string & keyof Flags>(
     key: K,
-    params?: CommonValueParams<Flags, K> | undefined
+    params?: CommonValueParams<Flags, K>
   ): Flags[K] | null {
     if (params?.context) {
       const config = this.getAndCacheContext(params.context)

@@ -38,21 +38,21 @@ const myFeatureValue = await featureManager.getValue('featureFlag', {
 
 # Table of contents
 
-- [feature-manager-wrapper](#feature-manager-wrapper)
 - [Installation](#installation)
 - [Getting started](#getting-started)
   - [(For Typescript users) Map out your feature flags](#for-typescript-users-map-out-your-feature-flags)
   - [Select the feature manager service driver to use](#select-the-feature-manager-service-driver-to-use)
   - [Create a feature manager](#create-a-feature-manager)
     - [Select the feature manager driver to use](#select-the-feature-manager-driver-to-use)
-    - [Create a feature manager class](#create-a-feature-manager-class)
-      - [Example: LaunchDarkly (server-side SDK)](#example-launchdarkly-server-side-sdk)
+    - [Create an instance of the feature manager](#create-an-instance-of-the-feature-manager)
+      - [Example: LaunchDarkly (server-side node SDK)](#example-launchdarkly-server-side-node-sdk)
+      - [Example: LaunchDarkly (client-side JS SDK)](#example-launchdarkly-client-side-js-sdk)
       - [Example: process.env](#example-processenv)
       - [Example: Key / Value](#example-key--value)
       - [Example: Configurity](#example-configurity)
 - [API](#api)
   - [Interface: 'CommonValueParams'](#interface-commonvalueparams)
-  - [Class: `AsyncFeatureManager`](#class-AsyncFeatureManager)
+  - [Class: `AsyncFeatureManager`](#class-asyncfeaturemanager)
     - [`constructor()`](#constructor)
     - [`assertGetValue()`](#assertgetvalue)
     - [`getValue()`](#getvalue)
@@ -61,7 +61,7 @@ const myFeatureValue = await featureManager.getValue('featureFlag', {
     - [`getAllValues()`](#getallvalues)
     - [`getAllRawValues()`](#getallrawvalues)
     - [`close()`](#close)
-  - [Class: `SyncFeatureManager`](#class-SyncFeatureManager)
+  - [Class: `SyncFeatureManager`](#class-syncfeaturemanager)
     - [`constructor()`](#constructor)
     - [`assertGetValueSync()`](#assertgetvaluesync)
     - [`getValueSync()`](#getvaluesync)
@@ -99,6 +99,7 @@ interface FeatureFlags {
 `feature-management-wrapper` currently supports the following feature managers:
 
 - `LaunchDarkly` (server): `LaunchDarklyServerDriver`
+- `LaunchDarkly` (client): `LaunchDarklyClientDriver`
 - `process.env`: `EnvironmentDriver`
 - `configurity`: `ConfigurityDriver`
 - key / value (where you have a KV mapping from an external source): `SimpleKeyValueDriver`
@@ -115,6 +116,7 @@ Determine if the feature manager you use is async or sync-based:
 Drivers and their (a)sync type:
 
 - `LaunchDarklyServerDriver`: async
+- `LaunchDarklyClientDriver`: sync (+ async supported)
 - `EnvironmentDriver`: sync (+ async supported)
 - `ConfigurityDriver`: sync (+ async supported)
 - `SimpleKeyValueDriver`: sync (+ async supported)
@@ -132,9 +134,9 @@ A feature manager uses one of the above drivers to interact with the specific fe
 *You can switch from `SyncFeatureManager` to `AsyncFeatureManager` if you need to use an async driver, but
 not the other way around as conversion to async methods would be necessary.*
 
-#### Example: LaunchDarkly (server-side SDK)
+#### Example: LaunchDarkly (server-side node SDK)
 
-[`LaunchDarkly`](https://launchdarkly.com/) is async-based since we call remote endpoints in the `LaunchDarkly` SDK to fetch feature flags.
+The [LaunchDarkly Server SDK](https://docs.launchdarkly.com/sdk/server-side/node-js) is async-based since we call remote endpoints to fetch feature flags.
 
 Because it's async-based, we use the `AsyncFeatureManager` to create our own feature manager.
 
@@ -175,13 +177,54 @@ const myFeatureValueFromContext = await featureManager.getValue('featureFlag', {
 await featureManager.close()
 ```
 
+#### Example: LaunchDarkly (client-side JS SDK)
+
+The [client javascript SDK for LaunchDarkly](https://docs.launchdarkly.com/sdk/client-side/javascript) is sync-based since the flags are all fetched on client initialization.
+
+It does not have the ability to use context data for fetching flags.
+
+```typescript
+// Can also use AsyncFeatureManager
+import { SyncFeatureManager, LaunchDarklyClientDriver } from 'feature-manager-wrapper';
+import * as LDClient from 'launchdarkly-js-client-sdk';
+
+interface FeatureFlags {
+  featureFlag: boolean;
+  anotherFeatureFlag: string;
+  featureFlaggedObject: {
+    featureFlaggedProperty: number;
+  };
+}
+
+const context = {
+  kind: 'user',
+  key: 'context-key-123abc'
+};
+
+// Create your LaunchDarkly client
+const launchDarklyClient = LDClient.initialize('client-side-id-123abc', context);
+
+const driver = new LaunchDarklyClientDriver<FeatureFlags>(launchDarklyClient)
+
+const featureManager = new SyncFeatureManager<FeatureFlags>(driver);
+
+// Get a feature flag
+const myFeatureValue = featureManager.getValueSync('featureFlag')
+
+// Close the connection to the LaunchDarkly service
+await featureManager.close()
+```
+
 #### Example: process.env
 
 `process.env` is sync-based since we access the environment variables synchronously.
 
 Because it's sync-based, we use the `SyncFeatureManager` to create our own feature manager.
 
+It does not have the ability to use context data for fetching flags.
+
 ```typescript
+// Can also use AsyncFeatureManager
 import { SyncFeatureManager, EnvironmentDriver } from 'feature-manager-wrapper';
 
 // maps to process.env variables
@@ -213,7 +256,10 @@ Key / Value is sync-based since we access the key / value mapping synchronously.
 
 Because it's sync-based, we use the `SyncFeatureManager` to create our own feature manager.
 
+It does not have the ability to use context data for fetching flags.
+
 ```typescript
+// Can also use AsyncFeatureManager
 import { SyncFeatureManager, SimpleKeyValueDriver } from 'feature-manager-wrapper';
 
 interface FeatureFlags {
@@ -248,6 +294,7 @@ const myFeatureValueSync = featureManager.getValueSync('featureFlag')
 Because it's sync-based, we use the `SyncFeatureManager` to create our own feature manager.
 
 ```typescript
+// Can also use AsyncFeatureManager
 import { SyncFeatureManager, ConfigurityDriver } from 'feature-manager-wrapper';
 import { loadConfigParser } from 'configurity'
 

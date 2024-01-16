@@ -1,7 +1,17 @@
 import { EnvironmentDriver } from '../../src'
 
 describe('EnvironmentDriver', () => {
-  const environmentDriver = new EnvironmentDriver()
+  interface Flags {
+    FEATURE_FLAG: boolean
+    ANOTHER_FLAG: number
+    OBJECT_FLAG: Record<string, any>
+    ARRAY_FLAG: Array<any>
+    BOOLEAN_FLAG: boolean
+    SAMPLE_TEXT: string
+  }
+
+  const environmentDriver = new EnvironmentDriver<Flags>()
+
   const mockEnv = {
     FEATURE_FLAG: 'true',
     ANOTHER_FLAG: '123',
@@ -15,11 +25,14 @@ describe('EnvironmentDriver', () => {
 
   describe('getRawValue', () => {
     it('should return the correct raw value from environment variables', async () => {
-      const result = await environmentDriver.getRawValue('FEATURE_FLAG')
+      const result = await environmentDriver.getRawValue('FEATURE_FLAG', {
+        defaultValue: true,
+      })
       expect(result).toBe('true')
     })
 
     it('should return the default value if key is not found', async () => {
+      // @ts-ignore
       const result = await environmentDriver.getRawValue('UNKNOWN_FLAG', {
         defaultValue: 'default',
       })
@@ -27,6 +40,7 @@ describe('EnvironmentDriver', () => {
     })
 
     it('should return null for a key that does not exist without a default value', async () => {
+      // @ts-ignore
       const result = await environmentDriver.getRawValue('MISSING_FLAG')
       expect(result).toBeNull()
     })

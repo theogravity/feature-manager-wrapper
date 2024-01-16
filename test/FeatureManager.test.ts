@@ -7,7 +7,7 @@ import {
 import { LDClient } from '@launchdarkly/node-server-sdk'
 import { LDContext } from '@launchdarkly/js-sdk-common'
 
-class MockClient {
+class MockLdServerClient {
   variation = jest.fn().mockResolvedValue(true)
   allFlagsState = jest.fn().mockResolvedValue({
     allValues: jest.fn().mockReturnValue({ testFlag: true }),
@@ -18,7 +18,7 @@ class MockClient {
 describe('FeatureManager', () => {
   it('AsyncFeatureManager should work with async drivers', async () => {
     const ldDriver = new LaunchDarklyServerDriver(
-      new MockClient() as unknown as LDClient,
+      new MockLdServerClient() as unknown as LDClient,
       {} as unknown as LDContext
     )
 
@@ -37,7 +37,7 @@ describe('FeatureManager', () => {
 
   it('AsyncAndSyncFeatureManager should work with async drivers', async () => {
     const ldDriver = new LaunchDarklyServerDriver(
-      new MockClient() as unknown as LDClient,
+      new MockLdServerClient() as unknown as LDClient,
       {} as unknown as LDContext
     )
 
@@ -56,7 +56,7 @@ describe('FeatureManager', () => {
 
   it('SyncFeatureManager should not work with sync drivers', async () => {
     const ldDriver = new LaunchDarklyServerDriver(
-      new MockClient() as unknown as LDClient,
+      new MockLdServerClient() as unknown as LDClient,
       {} as unknown as LDContext
     )
 
@@ -64,5 +64,28 @@ describe('FeatureManager', () => {
     const manager = new SyncFeatureManager(ldDriver)
 
     expect(manager.getDriver().assertGetRawValueSync).not.toBeDefined()
+  })
+
+  it('can swap managers for the same variable', async () => {
+    const ldServerDriver = new LaunchDarklyServerDriver(
+      new MockLdServerClient() as unknown as LDClient,
+      {} as unknown as LDContext
+    )
+
+    let manager
+
+    const envDriver = new EnvironmentDriver()
+
+    manager = new AsyncFeatureManager(ldServerDriver)
+    manager = new SyncFeatureManager(envDriver)
+
+    expect(
+      manager.getRawValue('lkajsfsdf', {
+        context: {
+          kind: 'multi',
+          key: 'lkajsfsdf',
+        },
+      })
+    ).toBeDefined()
   })
 })

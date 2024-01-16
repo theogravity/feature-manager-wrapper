@@ -5,7 +5,8 @@ import { AsyncFeatureManagerDriver } from '../base-drivers/AsyncFeatureManagerDr
 import { CommonValueParams } from '../types/common.types'
 
 /**
- * Driver for the LaunchDarkly server SDK. Only supports async operations.
+ * Driver for the LaunchDarkly server SDK (@launchdarkly/node-server-sdk).
+ * Only supports async operations.
  */
 export class LaunchDarklyServerDriver<
   Flags extends Record<string, any> = Record<string, any>,
@@ -16,7 +17,7 @@ export class LaunchDarklyServerDriver<
 
   /**
    * Creates a new LaunchDarkly driver instance.
-   * @param client The LaunchDarkly driver
+   * @param client The LaunchDarkly server client
    * @param defaultContext The default LaunchDarkly context to use when fetching feature flags.
    */
   constructor(client: LDClient, defaultContext: LDContext) {
