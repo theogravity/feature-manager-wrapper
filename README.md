@@ -1,6 +1,6 @@
 # feature-manager-wrapper
 
-[![NPM version](https://img.shields.io/npm/v/feature-manager-wrapper.svg?style=flat-square)](https://www.npmjs.com/package/configurity) [![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](http://www.typescriptlang.org/)
+[![NPM version](https://img.shields.io/npm/v/feature-manager-wrapper.svg?style=flat-square)](https://www.npmjs.com/package/feature-manager-wrapper) [![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](http://www.typescriptlang.org/)
 
 A wrapper / abstraction around configuration / feature manager libraries.
 

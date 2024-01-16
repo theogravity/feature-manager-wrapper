@@ -1,4 +1,4 @@
-# 2.1.0
+# 2.1.1
 
 - Add support for the LaunchDarkly Javascript Client SDK
   * Driver is called `LaunchDarklyClientDriver`
