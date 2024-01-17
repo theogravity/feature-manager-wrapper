@@ -1,3 +1,7 @@
+# 2.1.2
+
+Fix types path in `package.json`
+
 # 2.1.1
 
 - Add support for the LaunchDarkly Javascript Client SDK
