@@ -1,5 +1,6 @@
 import { SyncFeatureManagerDriver } from '../base-drivers/SyncFeatureManagerDriver'
 import { CommonValueParams, ValueReturnType } from '../types/common.types'
+import { deriveValue } from '../utils'
 
 /**
  * Uses process.env to get the values. Supports sync and async operations.
@@ -19,10 +20,9 @@ export class EnvironmentDriver<
     K extends string & keyof Flags,
     Params extends CommonValueParams<Flags, K> | undefined = undefined,
   >(key: K, params?: Params): ValueReturnType<Flags, K, Params> {
-    return (
-      (process.env[key] as Flags[K]) ??
-      params?.defaultValue ??
-      (null as ValueReturnType<Flags, K, Params>)
+    return deriveValue<Flags, K, Params>(
+      process.env[key] as Flags[K],
+      params?.defaultValue
     )
   }
 

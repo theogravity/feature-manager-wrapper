@@ -120,10 +120,10 @@ describe('Configurity driver', () => {
     expect(result).toEqual(expect.any(Number))
   })
 
-  it('should return null for a non-existing key', () => {
+  it('should return undefined for a non-existing key', () => {
     // @ts-expect-error
     const result = driver.getValueSync('non_existing_key')
-    expect(result).toBeNull()
+    expect(result).toBeUndefined()
   })
 
   it('should throw an error for a non-existing key', () => {

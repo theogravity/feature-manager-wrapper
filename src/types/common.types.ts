@@ -19,5 +19,5 @@ export type ValueReturnType<
 > = Params extends {
   defaultValue: infer DefaultValue
 }
-  ? Flags[K] | DefaultValue | null | undefined
+  ? Flags[K] | DefaultValue
   : Flags[K] | null | undefined

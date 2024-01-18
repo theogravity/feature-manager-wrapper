@@ -38,7 +38,7 @@ export class LaunchDarklyServerDriver<
     Params extends CommonValueParams<Flags, K> | undefined = undefined,
   >(key: K, params?: Params): Promise<ValueReturnType<Flags, K, Params>> {
     if (params?.context) {
-      return this.client.variation(key, params.context, params.defaultValue)
+      return this.client.variation(key, params.context, params?.defaultValue)
     }
 
     return this.client.variation(key, this.defaultContext, params?.defaultValue)

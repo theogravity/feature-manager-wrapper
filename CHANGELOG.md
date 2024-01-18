@@ -1,3 +1,8 @@
+# 3.0.1`
+
+- Fix around default value typing on the return type
+- Fixes around how the default value is handled when the feature is not found
+
 # 3.0.0
 
 - Improved return type when a default value is provided.
@@ -5,6 +10,7 @@
 
 **Breaking Changes**:
 
+- `getValue()` methods will distinguish between a `null` value and an `undefined` value
 - Altered behavior of `assert` methods to throw `FeatureManagerAssertionError` instead of `Error`.
 - `assert` methods will throw on the following conditions:
   - `null`

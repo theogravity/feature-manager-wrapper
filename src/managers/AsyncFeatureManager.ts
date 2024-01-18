@@ -1,6 +1,7 @@
 import { AsyncFeatureManagerDriver } from '../base-drivers/AsyncFeatureManagerDriver'
 import { CommonValueParams, ValueReturnType } from '../types/common.types'
 import { IAsyncFeatureManager } from '../types/IAsyncFeatureManager'
+import { deriveValue } from '../utils'
 
 /**
  * Feature manager that supports async and sync drivers.
@@ -33,7 +34,11 @@ export class AsyncFeatureManager<Flags extends Record<string, any>, Context>
     K extends string & keyof Flags,
     Params extends CommonValueParams<Flags, K> | undefined = undefined,
   >(key: K, params?: Params): Promise<ValueReturnType<Flags, K, Params>> {
-    return this.driver.getRawValue(key, params)
+    return deriveValue<Flags, K, Params>(
+      this.driver.getRawValue(key, params),
+      // The driver implementor may have forgotten to include the default value
+      params?.defaultValue
+    )
   }
 
   async getAllRawValues(params?: { context?: Context }): Promise<Flags> {

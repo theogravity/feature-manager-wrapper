@@ -26,7 +26,7 @@ export class Conversion {
 
   /**
    * Converts a value to a string.
-   * - Returns null if the value is null or undefined.
+
    * - Returns the string as-is if it's already a string.
    * - Converts and returns the value as a string if it's a number or boolean.
    * - Converts and returns the JSON stringified value if it's an object.
@@ -42,7 +42,7 @@ export class Conversion {
 
   /**
    * Converts a value to an object.
-   * - Returns null if the value is null or undefined.
+
    * - Returns the value directly if it's already an object.
    * - Attempts to parse and return the value as an object if it's a string (using secure-json-parse).
    * - Returns null for all other types.
@@ -87,7 +87,7 @@ export class Conversion {
 
   /**
    * Converts a value to its corresponding type based on the flag key.
-   * - Returns null if the value is null or undefined.
+
    * - Converts and returns the value based on its type (number, boolean, string, object).
    * - Uses the appropriate conversion method (toNum, toBoolean, toStr, toObj) based on the type of the value.
    * - Handles string values that can be converted to numbers, booleans, or objects.

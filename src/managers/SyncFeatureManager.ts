@@ -3,6 +3,7 @@ import { ISyncFeatureManager } from '../types/ISyncFeatureManager'
 import { SyncFeatureManagerDriver } from '../base-drivers/SyncFeatureManagerDriver'
 import { CommonValueParams, ValueReturnType } from '../types/common.types'
 import { IAsyncFeatureManager } from '../types/IAsyncFeatureManager'
+import { deriveValue } from '../utils'
 
 /**
  * Feature manager that only supports sync drivers. Exposes both sync and async operations since async operations are just sync operations wrapped in a promise.
@@ -37,7 +38,11 @@ export class SyncFeatureManager<Flags extends Record<string, any>, Context>
     K extends string & keyof Flags,
     Params extends CommonValueParams<Flags, K> | undefined = undefined,
   >(key: K, params?: Params): Promise<ValueReturnType<Flags, K, Params>> {
-    return this.driver.getRawValue(key, params)
+    return deriveValue<Flags, K, Params>(
+      this.driver.getRawValue(key, params),
+      // The driver implementor may have forgotten to include the default value
+      params?.defaultValue
+    )
   }
 
   async getAllRawValues(params?: { context?: Context }): Promise<Flags> {
@@ -74,7 +79,11 @@ export class SyncFeatureManager<Flags extends Record<string, any>, Context>
     K extends string & keyof Flags,
     Params extends CommonValueParams<Flags, K> | undefined = undefined,
   >(key: K, params?: Params): ValueReturnType<Flags, K, Params> {
-    return this.driver.getRawValueSync(key, params)
+    return deriveValue<Flags, K, Params>(
+      // The driver implementor may have forgotten to include the default value
+      this.driver.getRawValueSync(key, params),
+      params?.defaultValue
+    )
   }
 
   getAllRawValuesSync(params?: { context?: Context }): Flags {

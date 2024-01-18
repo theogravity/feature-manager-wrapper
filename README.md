@@ -475,8 +475,6 @@ constructor(driver: AsyncFeatureManagerDriver<Flags, Context>)
 ```typescript
   /**
    * Asynchronously retrieves all feature flag values.
-   *
-   * - Returns null if the value is null or undefined.
    * - Attempts to convert the value based on its probable type (number, boolean, string, object).
    *
    * Examples:

@@ -2,7 +2,11 @@ import { ISyncFeatureManager } from '../types/ISyncFeatureManager'
 import { AsyncFeatureManagerDriver } from './AsyncFeatureManagerDriver'
 import { Conversion } from '../Conversion'
 import { CommonValueParams, ValueReturnType } from '../types/common.types'
-import { FeatureManagerAssertionError, isNotDefined } from '../utils'
+import {
+  deriveValue,
+  FeatureManagerAssertionError,
+  valueIsEmpty,
+} from '../utils'
 
 /**
  * A driver that supports both sync and async operations
@@ -37,7 +41,10 @@ export abstract class SyncFeatureManagerDriver<
     K extends string & keyof Flags,
     Params extends CommonValueParams<Flags, K> | undefined = undefined,
   >(key: K, params?: Params): Promise<ValueReturnType<Flags, K, Params>> {
-    return this.getRawValueSync(key, params)
+    return deriveValue<Flags, K, Params>(
+      this.getRawValueSync(key, params),
+      params?.defaultValue
+    )
   }
 
   /**
@@ -84,9 +91,12 @@ export abstract class SyncFeatureManagerDriver<
     K extends string & keyof Flags,
     Params extends CommonValueParams<Flags, K> | undefined = undefined,
   >(key: K, params?: Params): ValueReturnType<Flags, K, Params> {
-    const value = this.getRawValueSync(key, params)
+    const value = deriveValue<Flags, K, Params>(
+      this.getRawValueSync(key, params),
+      params?.defaultValue
+    )
 
-    if (value === null) {
+    if (valueIsEmpty(value)) {
       throw new FeatureManagerAssertionError(
         `Key does not have a value: ${key}`
       )
@@ -106,7 +116,10 @@ export abstract class SyncFeatureManagerDriver<
     Params extends CommonValueParams<Flags, K> | undefined = undefined,
   >(key: K, params?: Params): ValueReturnType<Flags, K, Params> {
     const value = this.getRawValueSync(key, params)
-    return Conversion.toValue(value)
+    return deriveValue<Flags, K, Params>(
+      Conversion.toValue(value),
+      params?.defaultValue
+    )
   }
 
   /**
@@ -123,7 +136,7 @@ export abstract class SyncFeatureManagerDriver<
   >(key: K, params?: Params): ValueReturnType<Flags, K, Params> {
     const value = this.getValueSync(key, params)
 
-    if (isNotDefined(value)) {
+    if (valueIsEmpty(value)) {
       throw new FeatureManagerAssertionError(
         `Key does not have a value: ${key}`
       )

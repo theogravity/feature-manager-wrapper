@@ -1,7 +1,11 @@
 import { Conversion } from '../Conversion'
 import { CommonValueParams, ValueReturnType } from '../types/common.types'
 import { IAsyncFeatureManager } from '../types/IAsyncFeatureManager'
-import { FeatureManagerAssertionError, isNotDefined } from '../utils'
+import {
+  deriveValue,
+  FeatureManagerAssertionError,
+  valueIsEmpty,
+} from '../utils'
 
 /**
  * A driver that supports only async operations.
@@ -66,9 +70,12 @@ export abstract class AsyncFeatureManagerDriver<
     K extends string & keyof Flags,
     Params extends CommonValueParams<Flags, K> | undefined = undefined,
   >(key: K, params?: Params): Promise<ValueReturnType<Flags, K, Params>> {
-    const value = await this.getRawValue(key, params)
+    const value = deriveValue<Flags, K, Params>(
+      await this.getRawValue(key, params),
+      params?.defaultValue
+    )
 
-    if (isNotDefined(value)) {
+    if (valueIsEmpty(value)) {
       throw new FeatureManagerAssertionError(
         `Key does not have a value: ${key}`
       )
@@ -88,7 +95,10 @@ export abstract class AsyncFeatureManagerDriver<
     Params extends CommonValueParams<Flags, K> | undefined = undefined,
   >(key: K, params?: Params): Promise<ValueReturnType<Flags, K, Params>> {
     const value: any = await this.getRawValue<K, Params>(key, params)
-    return Conversion.toValue<Flags, K, Params>(value)
+    return deriveValue<Flags, K, Params>(
+      Conversion.toValue<Flags, K, Params>(value),
+      params?.defaultValue
+    )
   }
 
   /**
@@ -105,7 +115,7 @@ export abstract class AsyncFeatureManagerDriver<
   >(key: K, params?: Params): Promise<ValueReturnType<Flags, K, Params>> {
     const value = await this.getValue(key, params)
 
-    if (isNotDefined(value)) {
+    if (valueIsEmpty(value)) {
       throw new FeatureManagerAssertionError(
         `Key does not have a value: ${key}`
       )

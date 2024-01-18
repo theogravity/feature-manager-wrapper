@@ -39,10 +39,10 @@ describe('EnvironmentDriver', () => {
       expect(result).toBe('default')
     })
 
-    it('should return null for a key that does not exist without a default value', async () => {
+    it('should return undefined for a key that does not exist without a default value', async () => {
       // @ts-ignore
       const result = await environmentDriver.getRawValue('MISSING_FLAG')
-      expect(result).toBeNull()
+      expect(result).toBeUndefined()
     })
 
     it('should retrieve an object from environment variables', async () => {

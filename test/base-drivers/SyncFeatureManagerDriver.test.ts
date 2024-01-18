@@ -1,4 +1,8 @@
-import { CommonValueParams, SyncFeatureManagerDriver } from '../../src'
+import {
+  CommonValueParams,
+  deriveValue,
+  SyncFeatureManagerDriver,
+} from '../../src'
 import { ValueReturnType } from '../../src/types/common.types'
 
 // Simple in-memory key/value store implementation of BaseFeatureDriver
@@ -34,7 +38,7 @@ class SimpleFeatureDriver<
     K extends string & keyof Flags,
     Params extends CommonValueParams<Flags, K> | undefined = undefined,
   >(key: K, params?: Params): ValueReturnType<Flags, K, Params> {
-    return this.store[key] ?? (null as ValueReturnType<Flags, K, Params>)
+    return deriveValue<Flags, K, Params>(this.store[key], params?.defaultValue)
   }
 }
 
@@ -59,9 +63,9 @@ describe('SyncFeatureManagerDriver', () => {
       expect(driver.getRawValueSync('testFlag')).toBe('value')
     })
 
-    it('should return null for a non-existent flag', () => {
+    it('should return undefined for a non-existent flag', () => {
       // @ts-expect-error
-      expect(driver.getRawValueSync('nonExistentFlag')).toBeNull()
+      expect(driver.getRawValueSync('nonExistentFlag')).toBeUndefined()
     })
   })
 
@@ -92,7 +96,7 @@ describe('SyncFeatureManagerDriver', () => {
 
     it('should return null for a non-existent flag', () => {
       // @ts-expect-error
-      expect(driver.getValueSync('nonExistentFlag')).toBeNull()
+      expect(driver.getValueSync('nonExistentFlag')).toBeUndefined()
     })
   })
 

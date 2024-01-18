@@ -34,7 +34,6 @@ export interface IAsyncFeatureManager<
   /**
    * Asynchronously retrieves the value of a feature flag based on its key.
    *
-   * - Returns null if the value is null or undefined.
    * - Attempts to convert the value based on its probable type (number, boolean, string, object).
    *
    * Examples:
@@ -91,7 +90,6 @@ export interface IAsyncFeatureManager<
   /**
    * Asynchronously retrieves all feature flag values.
    *
-   * - Returns null if the value is null or undefined.
    * - Attempts to convert the value based on its probable type (number, boolean, string, object).
    *
    * Examples:

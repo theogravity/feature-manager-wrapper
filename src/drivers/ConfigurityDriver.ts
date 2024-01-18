@@ -2,6 +2,7 @@ import { Cerebro, ICerebroConfig } from 'configurity'
 import { SyncFeatureManagerDriver } from '../base-drivers/SyncFeatureManagerDriver'
 
 import { CommonValueParams, ValueReturnType } from '../types/common.types'
+import { deriveValue } from '../utils'
 
 /**
  * Driver for the configurity configuration library. Supports both
@@ -42,17 +43,15 @@ export class ConfigurityDriver<
     if (params?.context) {
       const config = this.getAndCacheContext(params.context)
 
-      return (
-        config.getRawValue(key) ??
-        params.defaultValue ??
-        (null as ValueReturnType<Flags, K, Params>)
+      return deriveValue<Flags, K, Params>(
+        config.getRawValue(key),
+        params?.defaultValue
       )
     }
 
-    return (
-      this.staticConfig.getRawValue(key) ??
-      params?.defaultValue ??
-      (null as ValueReturnType<Flags, K, Params>)
+    return deriveValue<Flags, K, Params>(
+      this.staticConfig.getRawValue(key),
+      params?.defaultValue
     )
   }
 
