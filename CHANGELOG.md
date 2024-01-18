@@ -1,3 +1,7 @@
+# 2.1.3
+
+Fix type issue in `SyncFeatureManagerDriver.ts`
+
 # 2.1.2
 
 Fix types path in `package.json`

@@ -34,10 +34,7 @@ export abstract class SyncFeatureManagerDriver<
 
   async getRawValue<K extends string & keyof Flags>(
     key: K,
-    params?: {
-      defaultValue?: Flags[K]
-      context?: Context
-    }
+    params?: CommonValueParams<Flags, K>
   ): Promise<Flags[K] | null> {
     return this.getRawValueSync(key, params)
   }
