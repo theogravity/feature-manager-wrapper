@@ -1,3 +1,16 @@
+# 3.0.0
+
+- Improved return type when a default value is provided.
+- internal: `toValue()` optimizations
+
+**Breaking Changes**:
+
+- Altered behavior of `assert` methods to throw `FeatureManagerAssertionError` instead of `Error`.
+- `assert` methods will throw on the following conditions:
+  - `null`
+  - `undefined`
+  - empty string
+
 # 2.1.3
 
 Fix type issue in `SyncFeatureManagerDriver.ts`

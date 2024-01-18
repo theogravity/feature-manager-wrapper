@@ -70,7 +70,7 @@ describe('Conversion', () => {
   describe('toObj', () => {
     it('should handle null and undefined', () => {
       expect(Conversion.toObj(null)).toBeNull()
-      expect(Conversion.toObj(undefined)).toBeNull()
+      expect(Conversion.toObj(undefined)).toBeUndefined()
     })
 
     it('should return object as-is', () => {
@@ -124,7 +124,7 @@ describe('Conversion', () => {
     // Test cases for toValue should be a combination of above since it delegates to other methods
     it('should return null for null and undefined', () => {
       expect(Conversion.toValue(null)).toBeNull()
-      expect(Conversion.toValue(undefined)).toBeNull()
+      expect(Conversion.toValue(undefined)).toBeUndefined()
     })
 
     it('should handle number values', () => {
@@ -140,6 +140,7 @@ describe('Conversion', () => {
 
     it('should handle string values', () => {
       expect(Conversion.toValue<any, 'string'>('test')).toBe('test')
+      expect(Conversion.toValue<any, 'string'>('test1')).toBe('test1')
     })
 
     it('should handle object values', () => {

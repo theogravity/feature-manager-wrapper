@@ -1,5 +1,5 @@
 import type { LDClient } from 'launchdarkly-js-client-sdk'
-import { CommonValueParams } from '../types/common.types'
+import { CommonValueParams, ValueReturnType } from '../types/common.types'
 import { SyncFeatureManagerDriver } from '../base-drivers/SyncFeatureManagerDriver'
 
 /**
@@ -21,10 +21,10 @@ export class LaunchDarklyClientDriver<
     this.client = client
   }
 
-  getRawValueSync<K extends string & keyof Flags>(
-    key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Flags[K] {
+  getRawValueSync<
+    K extends string & keyof Flags,
+    Params extends CommonValueParams<Flags, K> | undefined = undefined,
+  >(key: K, params?: Params): ValueReturnType<Flags, K, Params> {
     return this.client.variation(key, params?.defaultValue)
   }
 

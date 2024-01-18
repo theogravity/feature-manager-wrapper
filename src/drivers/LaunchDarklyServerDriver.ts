@@ -2,7 +2,7 @@ import type { LDClient } from '@launchdarkly/node-server-sdk'
 import type { LDContext } from '@launchdarkly/js-sdk-common'
 import { AsyncFeatureManagerDriver } from '../base-drivers/AsyncFeatureManagerDriver'
 
-import { CommonValueParams } from '../types/common.types'
+import { CommonValueParams, ValueReturnType } from '../types/common.types'
 
 /**
  * Driver for the LaunchDarkly server SDK (@launchdarkly/node-server-sdk).
@@ -33,10 +33,10 @@ export class LaunchDarklyServerDriver<
     this.defaultContext = context
   }
 
-  async getRawValue<K extends string & keyof Flags>(
-    key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Promise<Flags[K]> {
+  async getRawValue<
+    K extends string & keyof Flags,
+    Params extends CommonValueParams<Flags, K> | undefined = undefined,
+  >(key: K, params?: Params): Promise<ValueReturnType<Flags, K, Params>> {
     if (params?.context) {
       return this.client.variation(key, params.context, params.defaultValue)
     }

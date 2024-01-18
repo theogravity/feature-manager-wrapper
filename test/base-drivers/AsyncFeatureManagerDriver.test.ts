@@ -1,4 +1,5 @@
-import { AsyncFeatureManagerDriver } from '../../src'
+import { AsyncFeatureManagerDriver, CommonValueParams } from '../../src'
+import { ValueReturnType } from '../../src/types/common.types'
 
 // Simple in-memory key/value store implementation of BaseFeatureDriver
 class SimpleFeatureDriver<
@@ -21,10 +22,11 @@ class SimpleFeatureDriver<
     return this.store
   }
 
-  async getRawValue<K extends string & keyof Flags>(
-    key: K
-  ): Promise<Flags[K] | null> {
-    return this.store[key] ?? null
+  async getRawValue<
+    K extends string & keyof Flags,
+    Params extends CommonValueParams<Flags, K> | undefined = undefined,
+  >(key: K, params?: Params): Promise<ValueReturnType<Flags, K, Params>> {
+    return this.store[key] ?? (null as ValueReturnType<any, any>)
   }
 
   async close() {

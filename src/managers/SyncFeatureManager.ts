@@ -1,7 +1,7 @@
 import { ISyncFeatureManager } from '../types/ISyncFeatureManager'
 
 import { SyncFeatureManagerDriver } from '../base-drivers/SyncFeatureManagerDriver'
-import { CommonValueParams } from '../types/common.types'
+import { CommonValueParams, ValueReturnType } from '../types/common.types'
 import { IAsyncFeatureManager } from '../types/IAsyncFeatureManager'
 
 /**
@@ -22,10 +22,10 @@ export class SyncFeatureManager<Flags extends Record<string, any>, Context>
     this.driver = driver
   }
 
-  async getValue<K extends string & keyof Flags>(
-    key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Promise<Flags[K] | null> {
+  async getValue<
+    K extends string & keyof Flags,
+    Params extends CommonValueParams<Flags, K> | undefined = undefined,
+  >(key: K, params?: Params): Promise<ValueReturnType<Flags, K, Params>> {
     return this.driver.getValue(key, params)
   }
 
@@ -33,10 +33,10 @@ export class SyncFeatureManager<Flags extends Record<string, any>, Context>
     return this.driver.getAllValues(params)
   }
 
-  async getRawValue<K extends string & keyof Flags>(
-    key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Promise<Flags[K] | null> {
+  async getRawValue<
+    K extends string & keyof Flags,
+    Params extends CommonValueParams<Flags, K> | undefined = undefined,
+  >(key: K, params?: Params): Promise<ValueReturnType<Flags, K, Params>> {
     return this.driver.getRawValue(key, params)
   }
 
@@ -44,17 +44,17 @@ export class SyncFeatureManager<Flags extends Record<string, any>, Context>
     return this.driver.getAllRawValues(params)
   }
 
-  async assertGetValue<K extends string & keyof Flags>(
-    key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Promise<Flags[K]> {
+  async assertGetValue<
+    K extends string & keyof Flags,
+    Params extends CommonValueParams<Flags, K> | undefined = undefined,
+  >(key: K, params?: Params): Promise<ValueReturnType<Flags, K, Params>> {
     return this.driver.assertGetValue(key, params)
   }
 
-  async assertGetRawValue<K extends string & keyof Flags>(
-    key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Promise<Flags[K]> {
+  async assertGetRawValue<
+    K extends string & keyof Flags,
+    Params extends CommonValueParams<Flags, K> | undefined = undefined,
+  >(key: K, params?: Params): Promise<ValueReturnType<Flags, K, Params>> {
     return this.driver.assertGetRawValue(key, params)
   }
 
@@ -70,10 +70,10 @@ export class SyncFeatureManager<Flags extends Record<string, any>, Context>
     return this.driver
   }
 
-  getRawValueSync<K extends string & keyof Flags>(
-    key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Flags[K] | null {
+  getRawValueSync<
+    K extends string & keyof Flags,
+    Params extends CommonValueParams<Flags, K> | undefined = undefined,
+  >(key: K, params?: Params): ValueReturnType<Flags, K, Params> {
     return this.driver.getRawValueSync(key, params)
   }
 
@@ -81,10 +81,10 @@ export class SyncFeatureManager<Flags extends Record<string, any>, Context>
     return this.driver.getAllRawValuesSync(params)
   }
 
-  getValueSync<K extends string & keyof Flags>(
-    key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Flags[K] | null {
+  getValueSync<
+    K extends string & keyof Flags,
+    Params extends CommonValueParams<Flags, K> | undefined = undefined,
+  >(key: K, params?: Params): ValueReturnType<Flags, K, Params> {
     return this.driver.getValueSync(key, params)
   }
 
@@ -92,17 +92,17 @@ export class SyncFeatureManager<Flags extends Record<string, any>, Context>
     return this.driver.getAllValuesSync(params)
   }
 
-  assertGetValueSync<K extends string & keyof Flags>(
-    key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Flags[K] {
+  assertGetValueSync<
+    K extends string & keyof Flags,
+    Params extends CommonValueParams<Flags, K> | undefined = undefined,
+  >(key: K, params?: Params): ValueReturnType<Flags, K, Params> {
     return this.driver.assertGetValueSync(key, params)
   }
 
-  assertGetRawValueSync<K extends string & keyof Flags>(
-    key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Flags[K] {
+  assertGetRawValueSync<
+    K extends string & keyof Flags,
+    Params extends CommonValueParams<Flags, K> | undefined = undefined,
+  >(key: K, params?: Params): ValueReturnType<Flags, K, Params> {
     return this.driver.assertGetRawValueSync(key, params)
   }
 }

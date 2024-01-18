@@ -1,4 +1,4 @@
-import { CommonValueParams } from './common.types'
+import { CommonValueParams, ValueReturnType } from './common.types'
 
 /**
  * Interface for async-based feature flag accessors.
@@ -10,7 +10,7 @@ export interface IAsyncFeatureManager<
   /**
    * Asynchronously asserts and retrieves the value of a feature flag based on its key.
    *
-   * - Throws an error if the value doesn't exist.
+   * - Throws an error if the value is null, undefined, or empty string.
    * - Attempts to convert the value based on its probable type (number, boolean, string, object).
    *
    * Examples:
@@ -23,10 +23,13 @@ export interface IAsyncFeatureManager<
    * @param params Optional parameters including default value and context.
    * @returns A Promise resolving to the value of the flag.
    */
-  assertGetValue<K extends string & keyof Flags>(
+  assertGetValue<
+    K extends string & keyof Flags,
+    Params extends CommonValueParams<Flags, K> | undefined = undefined,
+  >(
     key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Promise<Flags[K]>
+    params?: Params
+  ): Promise<ValueReturnType<Flags, K, Params>>
 
   /**
    * Asynchronously retrieves the value of a feature flag based on its key.
@@ -45,24 +48,30 @@ export interface IAsyncFeatureManager<
    * @param params Optional parameters including default value and context.
    * @returns A Promise resolving to the value of the flag, or null if not found.
    */
-  getValue<K extends string & keyof Flags>(
+  getValue<
+    K extends string & keyof Flags,
+    Params extends CommonValueParams<Flags, K> | undefined = undefined,
+  >(
     key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Promise<Flags[K] | null>
+    params?: Params
+  ): Promise<ValueReturnType<Flags, K, Params>>
 
   /**
    * Asynchronously asserts and retrieves the raw value of a feature flag (no conversions applied) based on its key.
    *
-   * Throws an error if the value doesn't exist.
+   * Throws an error if the value is null, undefined, or empty string.
    *
    * @param key The key of the feature flag.
    * @param params Optional parameters including default value and context.
    * @returns A Promise resolving to the raw value of the flag.
    */
-  assertGetRawValue<K extends string & keyof Flags>(
+  assertGetRawValue<
+    K extends string & keyof Flags,
+    Params extends CommonValueParams<Flags, K> | undefined = undefined,
+  >(
     key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Promise<Flags[K]>
+    params?: Params
+  ): Promise<ValueReturnType<Flags, K, Params>>
 
   /**
    * Asynchronously retrieves the raw value of a feature flag (no conversions applied) based on its key.
@@ -71,10 +80,13 @@ export interface IAsyncFeatureManager<
    * @param params Optional parameters including default value and context.
    * @returns A Promise resolving to the raw value of the flag, or null if not found.
    */
-  getRawValue<K extends string & keyof Flags>(
+  getRawValue<
+    K extends string & keyof Flags,
+    Params extends CommonValueParams<Flags, K> | undefined = undefined,
+  >(
     key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Promise<Flags[K] | null>
+    params?: Params
+  ): Promise<ValueReturnType<Flags, K, Params>>
 
   /**
    * Asynchronously retrieves all feature flag values.

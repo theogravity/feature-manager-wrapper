@@ -1,7 +1,8 @@
 import { ISyncFeatureManager } from '../types/ISyncFeatureManager'
 import { AsyncFeatureManagerDriver } from './AsyncFeatureManagerDriver'
 import { Conversion } from '../Conversion'
-import { CommonValueParams } from '../types/common.types'
+import { CommonValueParams, ValueReturnType } from '../types/common.types'
+import { FeatureManagerAssertionError, isNotDefined } from '../utils'
 
 /**
  * A driver that supports both sync and async operations
@@ -32,10 +33,10 @@ export abstract class SyncFeatureManagerDriver<
    */
   abstract getAllRawValuesSync(params?: { context?: Context }): Flags
 
-  async getRawValue<K extends string & keyof Flags>(
-    key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Promise<Flags[K] | null> {
+  async getRawValue<
+    K extends string & keyof Flags,
+    Params extends CommonValueParams<Flags, K> | undefined = undefined,
+  >(key: K, params?: Params): Promise<ValueReturnType<Flags, K, Params>> {
     return this.getRawValueSync(key, params)
   }
 
@@ -66,26 +67,29 @@ export abstract class SyncFeatureManagerDriver<
    * @param params Optional parameters including default value and context.
    * @returns A Promise resolving to the raw value of the flag, or null if not found.
    */
-  abstract getRawValueSync<K extends string & keyof Flags>(
-    key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Flags[K] | null
+  abstract getRawValueSync<
+    K extends string & keyof Flags,
+    Params extends CommonValueParams<Flags, K> | undefined = undefined,
+  >(key: K, params?: Params): ValueReturnType<Flags, K, Params>
 
   /**
    * Synchronously asserts and retrieves the raw value of a specific feature flag based on its key.
-   * - Throws an error if the value is null, indicating that the flag does not exist.
+   * - Throws an error if the value is null, undefined, or empty string.
    * @param key The key of the feature flag.
    * @param params Optional parameters including default value and context.
+   * @throws FeatureManagerAssertionError if the value is null, undefined, or empty string.
    * @returns A Promise resolving to the raw value of the flag.
    */
-  assertGetRawValueSync<K extends string & keyof Flags>(
-    key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Flags[K] {
+  assertGetRawValueSync<
+    K extends string & keyof Flags,
+    Params extends CommonValueParams<Flags, K> | undefined = undefined,
+  >(key: K, params?: Params): ValueReturnType<Flags, K, Params> {
     const value = this.getRawValueSync(key, params)
 
     if (value === null) {
-      throw new Error(`Value for key ${key} does not exist`)
+      throw new FeatureManagerAssertionError(
+        `Key does not have a value: ${key}`
+      )
     }
 
     return value
@@ -97,29 +101,32 @@ export abstract class SyncFeatureManagerDriver<
    * @param params Optional parameters including default value and context.
    * @returns A Promise resolving to the value of the flag in its appropriate type, or null if not found.
    */
-  getValueSync<K extends string & keyof Flags>(
-    key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Flags[K] | null {
+  getValueSync<
+    K extends string & keyof Flags,
+    Params extends CommonValueParams<Flags, K> | undefined = undefined,
+  >(key: K, params?: Params): ValueReturnType<Flags, K, Params> {
     const value = this.getRawValueSync(key, params)
     return Conversion.toValue(value)
   }
 
   /**
    * Synchronously asserts and retrieves the value of a specific feature flag based on its key, converting it to its appropriate type.
-   * - Throws an error if the value is null, indicating that the flag does not exist.
+   * - Throws an error if the value is null, undefined, or empty string.
    * @param key The key of the feature flag.
    * @param params Optional parameters including default value and context.
+   * @throws FeatureManagerAssertionError if the value is null, undefined, or empty string.
    * @returns A Promise resolving to the value of the flag in its appropriate type.
    */
-  assertGetValueSync<K extends string & keyof Flags>(
-    key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Flags[K] {
+  assertGetValueSync<
+    K extends string & keyof Flags,
+    Params extends CommonValueParams<Flags, K> | undefined = undefined,
+  >(key: K, params?: Params): ValueReturnType<Flags, K, Params> {
     const value = this.getValueSync(key, params)
 
-    if (value === null) {
-      throw new Error(`Value for key ${key} does not exist`)
+    if (isNotDefined(value)) {
+      throw new FeatureManagerAssertionError(
+        `Key does not have a value: ${key}`
+      )
     }
 
     return value

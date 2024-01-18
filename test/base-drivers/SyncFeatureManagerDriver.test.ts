@@ -1,4 +1,5 @@
-import { SyncFeatureManagerDriver } from '../../src'
+import { CommonValueParams, SyncFeatureManagerDriver } from '../../src'
+import { ValueReturnType } from '../../src/types/common.types'
 
 // Simple in-memory key/value store implementation of BaseFeatureDriver
 class SimpleFeatureDriver<
@@ -29,8 +30,11 @@ class SimpleFeatureDriver<
     return this.store
   }
 
-  getRawValueSync<K extends string & keyof Flags>(key: K): Flags[K] | null {
-    return this.store[key] ?? null
+  getRawValueSync<
+    K extends string & keyof Flags,
+    Params extends CommonValueParams<Flags, K> | undefined = undefined,
+  >(key: K, params?: Params): ValueReturnType<Flags, K, Params> {
+    return this.store[key] ?? (null as ValueReturnType<Flags, K, Params>)
   }
 }
 

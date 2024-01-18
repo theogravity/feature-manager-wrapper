@@ -390,7 +390,7 @@ constructor(driver: AsyncFeatureManagerDriver<Flags, Context>)
 /**
  * Asynchronously asserts and retrieves the value of a feature flag based on its key.
  *
- * - Throws an error if the value doesn't exist.
+ * - Throws an error if the value is null, undefined, or empty string.
  * - Attempts to convert the value based on its probable type (number, boolean, string, object).
  *
  * Examples:
@@ -401,6 +401,7 @@ constructor(driver: AsyncFeatureManagerDriver<Flags, Context>)
  *
  * @param key The key of the feature flag.
  * @param params Optional parameters including default value and context.
+ * @throws FeatureManagerAssertionError if the value is null, undefined, or empty string.
  * @returns A Promise resolving to the value of the flag.
  */
   assertGetValue<K extends string & keyof Flags>(
@@ -440,10 +441,11 @@ constructor(driver: AsyncFeatureManagerDriver<Flags, Context>)
 ```typescript
 /**
  * Asynchronously asserts and retrieves the raw value of a feature flag (no conversions applied) based on its key.
- * Throws an error if the value doesn't exist.
+ * Throws an error if the value is null, undefined, or empty string.
  *
  * @param key The key of the feature flag.
  * @param params Optional parameters including default value and context.
+ * @throws FeatureManagerAssertionError if the value is null, undefined, or empty string.
  * @returns A Promise resolving to the raw value of the flag.
  */
   assertGetRawValue<K extends string & keyof Flags>(
@@ -547,7 +549,7 @@ constructor(driver: SyncFeatureManagerDriver<Flags, Context>)
   /**
  * Synchronously asserts and retrieves the value of a feature flag based on its key.
  *
- * - Throws an error if the value doesn't exist.
+ * - Throws an error if the value is null, undefined, or empty string.
  * - Attempts to convert the value based on its probable type (number, boolean, string, object).
  *
  * Examples:
@@ -558,6 +560,7 @@ constructor(driver: SyncFeatureManagerDriver<Flags, Context>)
  *
  * @param key The key of the feature flag.
  * @param params Optional parameters including default value and context.
+ * @throws FeatureManagerAssertionError if the value is null, undefined, or empty string.
  * @returns The value of the flag.
  */
 assertGetValueSync<K extends string & keyof Flags>(
@@ -598,10 +601,11 @@ assertGetValueSync<K extends string & keyof Flags>(
   /**
  * Synchronously asserts and retrieves the raw value of a feature flag (no conversions applied) based on its key.
  *
- * Throws an error if the value doesn't exist.
+ * Throws an error if the value is null, undefined, or empty string.
  *
  * @param key The key of the feature flag.
  * @param params Optional parameters including default value and context.
+ * @throws FeatureManagerAssertionError if the value is null, undefined, or empty string.
  * @returns The raw value of the flag.
  */
 assertGetRawValueSync<K extends string & keyof Flags>(

@@ -1,6 +1,7 @@
 import { Conversion } from '../Conversion'
-import { CommonValueParams } from '../types/common.types'
+import { CommonValueParams, ValueReturnType } from '../types/common.types'
 import { IAsyncFeatureManager } from '../types/IAsyncFeatureManager'
+import { FeatureManagerAssertionError, isNotDefined } from '../utils'
 
 /**
  * A driver that supports only async operations.
@@ -48,26 +49,29 @@ export abstract class AsyncFeatureManagerDriver<
    * @param params Optional parameters including default value and context.
    * @returns A Promise resolving to the raw value of the flag, or null if not found.
    */
-  abstract getRawValue<K extends string & keyof Flags>(
-    key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Promise<Flags[K] | null>
+  abstract getRawValue<
+    K extends string & keyof Flags,
+    Params extends CommonValueParams<Flags, K> | undefined = undefined,
+  >(key: K, params?: Params): Promise<ValueReturnType<Flags, K, Params>>
 
   /**
    * Asynchronously asserts and retrieves the raw value of a specific feature flag based on its key.
-   * - Throws an error if the value is null, indicating that the flag does not exist.
+   * - Throws an error if the value is null, undefined, or empty string.
    * @param key The key of the feature flag.
    * @param params Optional parameters including default value and context.
+   * @throws FeatureManagerAssertionError if the value is null, undefined, or empty string.
    * @returns A Promise resolving to the raw value of the flag.
    */
-  async assertGetRawValue<K extends string & keyof Flags>(
-    key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Promise<Flags[K]> {
+  async assertGetRawValue<
+    K extends string & keyof Flags,
+    Params extends CommonValueParams<Flags, K> | undefined = undefined,
+  >(key: K, params?: Params): Promise<ValueReturnType<Flags, K, Params>> {
     const value = await this.getRawValue(key, params)
 
-    if (value === null) {
-      throw new Error(`Value for key ${key} does not exist`)
+    if (isNotDefined(value)) {
+      throw new FeatureManagerAssertionError(
+        `Key does not have a value: ${key}`
+      )
     }
 
     return value
@@ -79,29 +83,32 @@ export abstract class AsyncFeatureManagerDriver<
    * @param params Optional parameters including default value and context.
    * @returns A Promise resolving to the value of the flag in its appropriate type, or null if not found.
    */
-  async getValue<K extends string & keyof Flags>(
-    key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Promise<Flags[K] | null> {
-    const value: any = await this.getRawValue(key, params)
-    return Conversion.toValue<Flags, K>(value)
+  async getValue<
+    K extends string & keyof Flags,
+    Params extends CommonValueParams<Flags, K> | undefined = undefined,
+  >(key: K, params?: Params): Promise<ValueReturnType<Flags, K, Params>> {
+    const value: any = await this.getRawValue<K, Params>(key, params)
+    return Conversion.toValue<Flags, K, Params>(value)
   }
 
   /**
    * Asynchronously asserts and retrieves the value of a specific feature flag based on its key, converting it to its appropriate type.
-   * - Throws an error if the value is null, indicating that the flag does not exist.
+   * - Throws an error if the value is null, undefined, or empty string.
    * @param key The key of the feature flag.
    * @param params Optional parameters including default value and context.
+   * @throws FeatureManagerAssertionError if the value is null, undefined, or empty string.
    * @returns A Promise resolving to the value of the flag in its appropriate type.
    */
-  async assertGetValue<K extends string & keyof Flags>(
-    key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Promise<Flags[K]> {
+  async assertGetValue<
+    K extends string & keyof Flags,
+    Params extends CommonValueParams<Flags, K> | undefined = undefined,
+  >(key: K, params?: Params): Promise<ValueReturnType<Flags, K, Params>> {
     const value = await this.getValue(key, params)
 
-    if (value === null) {
-      throw new Error(`Value for key ${key} does not exist`)
+    if (isNotDefined(value)) {
+      throw new FeatureManagerAssertionError(
+        `Key does not have a value: ${key}`
+      )
     }
 
     return value

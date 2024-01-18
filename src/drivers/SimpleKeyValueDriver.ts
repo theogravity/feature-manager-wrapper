@@ -1,5 +1,5 @@
 import { SyncFeatureManagerDriver } from '../base-drivers/SyncFeatureManagerDriver'
-import { CommonValueParams } from '../types/common.types'
+import { CommonValueParams, ValueReturnType } from '../types/common.types'
 
 /**
  * Takes in a key / value mapping as the configuration. Supports sync and async operations.
@@ -15,18 +15,22 @@ export class SimpleKeyValueDriver<
     this.conf = conf
   }
 
-  async getRawValue<K extends string & keyof Flags>(
-    key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Promise<Flags[K] | null> {
+  async getRawValue<
+    K extends string & keyof Flags,
+    Params extends CommonValueParams<Flags, K> | undefined = undefined,
+  >(key: K, params?: Params): Promise<ValueReturnType<Flags, K, Params>> {
     return this.getRawValueSync(key, params)
   }
 
-  getRawValueSync<K extends string & keyof Flags>(
-    key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Flags[K] | null {
-    return (this.conf[key] as Flags[K]) ?? params?.defaultValue ?? null
+  getRawValueSync<
+    K extends string & keyof Flags,
+    Params extends CommonValueParams<Flags, K> | undefined = undefined,
+  >(key: K, params?: Params): ValueReturnType<Flags, K, Params> {
+    return (
+      (this.conf[key] as Flags[K]) ??
+      params?.defaultValue ??
+      (null as ValueReturnType<Flags, K, Params>)
+    )
   }
 
   getAllRawValuesSync(): Flags {

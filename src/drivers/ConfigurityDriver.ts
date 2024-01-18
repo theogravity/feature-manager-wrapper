@@ -1,7 +1,7 @@
 import { Cerebro, ICerebroConfig } from 'configurity'
 import { SyncFeatureManagerDriver } from '../base-drivers/SyncFeatureManagerDriver'
 
-import { CommonValueParams } from '../types/common.types'
+import { CommonValueParams, ValueReturnType } from '../types/common.types'
 
 /**
  * Driver for the configurity configuration library. Supports both
@@ -35,17 +35,25 @@ export class ConfigurityDriver<
     this.contextConfig = new WeakMap()
   }
 
-  getRawValueSync<K extends string & keyof Flags>(
-    key: K,
-    params?: CommonValueParams<Flags, K>
-  ): Flags[K] | null {
+  getRawValueSync<
+    K extends string & keyof Flags,
+    Params extends CommonValueParams<Flags, K> | undefined = undefined,
+  >(key: K, params?: Params): ValueReturnType<Flags, K, Params> {
     if (params?.context) {
       const config = this.getAndCacheContext(params.context)
 
-      return config.getRawValue(key) ?? params.defaultValue ?? null
+      return (
+        config.getRawValue(key) ??
+        params.defaultValue ??
+        (null as ValueReturnType<Flags, K, Params>)
+      )
     }
 
-    return this.staticConfig.getRawValue(key) ?? params?.defaultValue ?? null
+    return (
+      this.staticConfig.getRawValue(key) ??
+      params?.defaultValue ??
+      (null as ValueReturnType<Flags, K, Params>)
+    )
   }
 
   getAllRawValuesSync(params?: { context?: Context } | undefined): Flags {

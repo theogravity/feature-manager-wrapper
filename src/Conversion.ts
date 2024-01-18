@@ -1,4 +1,5 @@
 import SJSON from 'secure-json-parse'
+import { CommonValueParams, ValueReturnType } from './types/common.types'
 
 export class Conversion {
   /**
@@ -46,10 +47,12 @@ export class Conversion {
    * - Attempts to parse and return the value as an object if it's a string (using secure-json-parse).
    * - Returns null for all other types.
    */
-  static toObj<Flags extends Record<string, any>, K extends keyof Flags>(
-    value: any
-  ): Flags[K] | null {
-    if (value === null || value === undefined) return null
+  static toObj<
+    Flags extends Record<string, any>,
+    K extends keyof Flags,
+    Params extends CommonValueParams<Flags, K> | undefined = undefined,
+  >(value: any): ValueReturnType<Flags, K, Params> {
+    if (value === null || value === undefined) return value
     if (typeof value === 'object') return value
     if (typeof value === 'string') {
       try {
@@ -58,10 +61,10 @@ export class Conversion {
           constructorAction: 'remove',
         })
       } catch (e) {
-        return null
+        return null as ValueReturnType<Flags, K, Params>
       }
     }
-    return null
+    return null as ValueReturnType<Flags, K, Params>
   }
 
   /**
@@ -89,34 +92,43 @@ export class Conversion {
    * - Uses the appropriate conversion method (toNum, toBoolean, toStr, toObj) based on the type of the value.
    * - Handles string values that can be converted to numbers, booleans, or objects.
    */
-  static toValue<Flags extends Record<string, any>, K extends keyof Flags>(
-    value: any
-  ): Flags[K] | null {
-    if (value === null || value === undefined) return null
+  static toValue<
+    Flags extends Record<string, any>,
+    K extends keyof Flags,
+    Params extends CommonValueParams<Flags, K> | undefined = undefined,
+  >(value: any): ValueReturnType<Flags, K, Params> {
+    if (value === null || value === undefined) return value
 
     switch (typeof value) {
       case 'number':
-        return Conversion.toNum(value) as Flags[K] | null
+        return value as Flags[K]
       case 'boolean':
-        return Conversion.toBoolean(value) as Flags[K] | null
+        return value as Flags[K]
       case 'string':
         const numValue = Number(value)
         if (!isNaN(numValue)) {
-          return Conversion.toNum(value) as Flags[K] | null
+          return Conversion.toNum(value) as Flags[K]
         }
         if (value.toLowerCase() === 'true' || value.toLowerCase() === 'false') {
-          return Conversion.toBoolean(value) as Flags[K] | null
+          return Conversion.toBoolean(value) as Flags[K]
         }
         try {
-          JSON.parse(value)
-          return Conversion.toObj<Flags, K>(value)
+          const v = Conversion.toObj<Flags, K, Params>(value)
+
+          // Converted to an object; return
+          if (v) {
+            return v
+          }
+
+          // Return string as-is
+          return value as Flags[K]
         } catch (e) {
-          return Conversion.toStr(value) as Flags[K] | null
+          return value as Flags[K]
         }
       case 'object':
-        return Conversion.toObj<Flags, K>(value)
+        return value
       default:
-        return null
+        return null as ValueReturnType<Flags, K, Params>
     }
   }
 }
