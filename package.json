@@ -1,13 +1,13 @@
 {
   "name": "feature-manager-wrapper",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "description": "Abstraction layer for configuration / feature management systems and services",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "umd:main": "dist/umd/index.js",
   "types": "dist/types/index.d.ts",
   "scripts": {
-    "_postinstall": "husky install",
+    "postinstall": "husky install",
     "prepublishOnly": "pinst --disable",
     "postpublish": "pinst --enable",
     "build": "npm run build:cjs && npm run build:esm && npm run build:umd && npm run build:types",
@@ -60,6 +60,7 @@
     "@commitlint/cli": "^18.4.4",
     "@commitlint/config-conventional": "^18.4.4",
     "@launchdarkly/js-sdk-common": "^2.1.0",
+    "launchdarkly-electron-client-sdk": "^1.7.0",
     "launchdarkly-js-client-sdk": "^3.1.4",
     "@launchdarkly/node-server-sdk": "^9.0.5",
     "@types/jest": "^29.5.11",

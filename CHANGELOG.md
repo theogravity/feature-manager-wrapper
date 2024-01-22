@@ -1,4 +1,8 @@
-# 3.0.1`
+# 3.1.0
+
+- Add support for the launch darkly electron client SDK via `LaunchDarklyElectronDriver`
+
+# 3.0.1
 
 - Fix around default value typing on the return type
 - Fixes around how the default value is handled when the feature is not found

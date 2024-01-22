@@ -100,6 +100,7 @@ interface FeatureFlags {
 
 - `LaunchDarkly` (server): `LaunchDarklyServerDriver`
 - `LaunchDarkly` (client): `LaunchDarklyClientDriver`
+- `LaunchDarkly` (Electron client): `LaunchDarklyElectronClientDriver`
 - `process.env`: `EnvironmentDriver`
 - `configurity`: `ConfigurityDriver`
 - key / value (where you have a KV mapping from an external source): `SimpleKeyValueDriver`
@@ -117,6 +118,7 @@ Drivers and their (a)sync type:
 
 - `LaunchDarklyServerDriver`: async
 - `LaunchDarklyClientDriver`: sync (+ async supported)
+- `LaunchDarklyElectronClientDriver`: sync (+async supported)
 - `EnvironmentDriver`: sync (+ async supported)
 - `ConfigurityDriver`: sync (+ async supported)
 - `SimpleKeyValueDriver`: sync (+ async supported)
@@ -205,6 +207,44 @@ const context = {
 const launchDarklyClient = LDClient.initialize('client-side-id-123abc', context);
 
 const driver = new LaunchDarklyClientDriver<FeatureFlags>(launchDarklyClient)
+
+const featureManager = new SyncFeatureManager<FeatureFlags>(driver);
+
+// Get a feature flag
+const myFeatureValue = featureManager.getValueSync('featureFlag')
+
+// Close the connection to the LaunchDarkly service
+await featureManager.close()
+```
+
+#### Example: LaunchDarkly (client-side Electron JS SDK)
+
+The [electron client javascript SDK for LaunchDarkly](https://docs.launchdarkly.com/sdk/client-side/electron) is sync-based since the flags are all fetched on client initialization.
+
+It does not have the ability to use context data for fetching flags.
+
+```typescript
+// Can also use AsyncFeatureManager
+import { SyncFeatureManager, LaunchDarklyClientDriver } from 'feature-manager-wrapper';
+import * as LDElectron from 'launchdarkly-electron-client-sdk';
+
+interface FeatureFlags {
+  featureFlag: boolean;
+  anotherFeatureFlag: string;
+  featureFlaggedObject: {
+    featureFlaggedProperty: number;
+  };
+}
+
+const context = {
+  kind: 'user',
+  key: 'context-key-123abc'
+};
+
+// Create your LaunchDarkly client
+const launchDarklyClient = LDElectron.initializeInMain('client-side-id-123abc', context);
+
+const driver = new LaunchDarklyElectronClientDriver<FeatureFlags>(launchDarklyClient)
 
 const featureManager = new SyncFeatureManager<FeatureFlags>(driver);
 
