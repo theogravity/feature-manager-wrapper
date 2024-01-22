@@ -10,12 +10,16 @@ import { deriveValue } from '../utils'
 export class AsyncFeatureManager<Flags extends Record<string, any>, Context>
   implements IAsyncFeatureManager<Flags, Context>
 {
-  private driver: AsyncFeatureManagerDriver<Flags, Context>
+  protected driver: AsyncFeatureManagerDriver<Flags, Context>
 
   /**
    * @param driver The driver to use for interacting with the feature manager service.
    */
   constructor(driver: AsyncFeatureManagerDriver<Flags, Context>) {
+    this.driver = driver
+  }
+
+  protected setDriver(driver: AsyncFeatureManagerDriver<Flags, Context>) {
     this.driver = driver
   }
 

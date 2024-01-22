@@ -4,6 +4,7 @@ export * from './drivers/LaunchDarklyServerDriver'
 export * from './drivers/SimpleKeyValueDriver'
 export * from './drivers/LaunchDarklyClientDriver'
 export * from './drivers/LaunchDarklyElectronClientDriver'
+export * from './drivers/DummyDriver'
 
 export * from './base-drivers/SyncFeatureManagerDriver'
 export * from './base-drivers/AsyncFeatureManagerDriver'

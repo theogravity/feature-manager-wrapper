@@ -1,3 +1,7 @@
+# 3.2.0
+
+- Added `DummyDriver`
+
 # 3.1.0
 
 - Add support for the launch darkly electron client SDK via `LaunchDarklyElectronDriver`

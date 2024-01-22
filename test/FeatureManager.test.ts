@@ -3,6 +3,7 @@ import {
   AsyncFeatureManager,
   EnvironmentDriver,
   LaunchDarklyServerDriver,
+  DummyDriver,
 } from '../src'
 import { LDClient } from '@launchdarkly/node-server-sdk'
 import { LDContext } from '@launchdarkly/js-sdk-common'
@@ -87,5 +88,25 @@ describe('FeatureManager', () => {
         },
       })
     ).toBeDefined()
+  })
+
+  it('should use a dummy driver', async () => {
+    class SampleFeatureManager extends SyncFeatureManager<
+      Record<string, any>,
+      any
+    > {
+      constructor() {
+        super(new DummyDriver())
+      }
+
+      async init() {
+        this.setDriver(new EnvironmentDriver())
+      }
+    }
+
+    const manager = new SampleFeatureManager()
+    await manager.init()
+
+    expect(manager).toBeDefined()
   })
 })

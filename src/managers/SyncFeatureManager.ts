@@ -14,12 +14,16 @@ export class SyncFeatureManager<Flags extends Record<string, any>, Context>
     IAsyncFeatureManager<Flags, Context>,
     ISyncFeatureManager<Flags, Context>
 {
-  private driver: SyncFeatureManagerDriver<Flags, Context>
+  protected driver: SyncFeatureManagerDriver<Flags, Context>
 
   /**
    * @param driver The driver to use for interacting with the feature manager service.
    */
   constructor(driver: SyncFeatureManagerDriver<Flags, Context>) {
+    this.driver = driver
+  }
+
+  protected setDriver(driver: SyncFeatureManagerDriver<Flags, Context>) {
     this.driver = driver
   }
 

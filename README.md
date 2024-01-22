@@ -47,9 +47,11 @@ const myFeatureValue = await featureManager.getValue('featureFlag', {
     - [Create an instance of the feature manager](#create-an-instance-of-the-feature-manager)
       - [Example: LaunchDarkly (server-side node SDK)](#example-launchdarkly-server-side-node-sdk)
       - [Example: LaunchDarkly (client-side JS SDK)](#example-launchdarkly-client-side-js-sdk)
+      - [Example: LaunchDarkly (client-side Electron JS SDK)](#example-launchdarkly-client-side-electron-js-sdk)
       - [Example: process.env](#example-processenv)
       - [Example: Key / Value](#example-key--value)
       - [Example: Configurity](#example-configurity)
+    - [Feature Managers with async initialization](#feature-managers-with-async-initialization)
 - [API](#api)
   - [Interface: 'CommonValueParams'](#interface-commonvalueparams)
   - [Class: `AsyncFeatureManager`](#class-asyncfeaturemanager)
@@ -372,6 +374,32 @@ const myFeatureValueSync = featureManager.getValueSync('featureFlag', {
   defaultValue: true
 })
 ```
+
+### Feature Managers with async initialization
+
+You may want to extend a feature manager to support extended functionality, and sometimes you need
+to initialize the feature manager asynchronously.
+
+You can do this using a `DummyDriver`:
+
+```typescript
+import { SyncFeatureManager, DummyDriver } from 'feature-manager-wrapper';
+
+class MyFeatureManager extends SyncFeatureManager {
+  constructor() {
+    // We have to pass a driver to the constructor, so we pass a dummy driver
+    super(new DummyDriver())
+  }
+  
+  async init() {
+    // Do some async init stuff
+    
+    // Assign the actual driver here
+    this.setDriver(new MyActualDriver())
+  }
+}
+```
+
 
 # API
 
