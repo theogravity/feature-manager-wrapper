@@ -1,3 +1,7 @@
+# 3.3.0
+
+- Add `setValueSync` and `setValuesSync` methods to `SimpleKeyValueDriver`
+
 # 3.2.0
 
 - Added `DummyDriver`

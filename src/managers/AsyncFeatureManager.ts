@@ -15,11 +15,11 @@ export class AsyncFeatureManager<Flags extends Record<string, any>, Context>
   /**
    * @param driver The driver to use for interacting with the feature manager service.
    */
-  constructor(driver: AsyncFeatureManagerDriver<Flags, Context>) {
+  constructor(driver: IAsyncFeatureManager<Flags, Context>) {
     this.driver = driver
   }
 
-  protected setDriver(driver: AsyncFeatureManagerDriver<Flags, Context>) {
+  protected setDriver(driver: IAsyncFeatureManager<Flags, Context>) {
     this.driver = driver
   }
 

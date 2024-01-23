@@ -4,6 +4,7 @@ import {
   EnvironmentDriver,
   LaunchDarklyServerDriver,
   DummyDriver,
+  SimpleKeyValueDriver,
 } from '../src'
 import { LDClient } from '@launchdarkly/node-server-sdk'
 import { LDContext } from '@launchdarkly/js-sdk-common'
@@ -53,6 +54,26 @@ describe('FeatureManager', () => {
     const manager = new SyncFeatureManager(envDriver)
 
     expect(manager).toBeDefined()
+  })
+
+  it('SyncFeatureManager should get a driver', async () => {
+    interface Flags {
+      'test-flag': string
+    }
+
+    const envDriver = new SimpleKeyValueDriver<Flags>({
+      'test-flag': 'test-value',
+    })
+
+    const manager = new SyncFeatureManager(envDriver)
+
+    const driver = manager.getDriver() as SimpleKeyValueDriver<Flags>
+
+    expect(driver.setValueSync).toBeDefined()
+
+    expect(
+      (manager.getDriver() as SimpleKeyValueDriver<Flags>).setValueSync
+    ).toBeDefined()
   })
 
   it('SyncFeatureManager should not work with sync drivers', async () => {

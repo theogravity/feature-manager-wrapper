@@ -298,7 +298,8 @@ Key / Value is sync-based since we access the key / value mapping synchronously.
 
 Because it's sync-based, we use the `SyncFeatureManager` to create our own feature manager.
 
-It does not have the ability to use context data for fetching flags.
+- It does not have the ability to use context data for fetching flags.
+- It does have the ability to set flags from the driver via `setValueSync` and `setValuesSync` methods.
 
 ```typescript
 // Can also use AsyncFeatureManager
@@ -327,6 +328,19 @@ const featureManager = new SyncFeatureManager<FeatureFlags>(driver);
 // Get a feature flag
 const myFeatureValue = await featureManager.getValue('featureFlag')
 const myFeatureValueSync = featureManager.getValueSync('featureFlag')
+
+// Specific to this driver: set a feature flag(s)
+// const driver = manager.getDriver() as SimpleKeyValueDriver<Flags>
+driver.setValueSync('featureFlag', false)
+
+driver.setValuesSync({
+  featureFlag: false,
+  anotherFeatureFlag: 'goodbye',
+  featureFlaggedObject: {
+    featureFlaggedProperty: 456
+  }
+})
+
 ```
 
 #### Example: Configurity

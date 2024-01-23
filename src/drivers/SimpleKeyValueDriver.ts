@@ -4,6 +4,7 @@ import { deriveValue } from '../utils'
 
 /**
  * Takes in a key / value mapping as the configuration. Supports sync and async operations.
+ * Also ideal for testing as it provides setters for feature values.
  */
 export class SimpleKeyValueDriver<
   Flags extends Record<string, any> = Record<string, any>,
@@ -39,6 +40,20 @@ export class SimpleKeyValueDriver<
 
   async getAllRawValues(): Promise<Flags> {
     return this.getAllRawValuesSync()
+  }
+
+  /**
+   * Sets the value of a feature flag.
+   */
+  setValueSync<K extends string & keyof Flags>(key: K, value: Flags[K]) {
+    this.conf[key] = value
+  }
+
+  /**
+   * Sets the values of multiple feature flags.
+   */
+  setValuesSync(values: Partial<Flags>) {
+    this.conf = { ...this.conf, ...values }
   }
 
   /**
