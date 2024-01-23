@@ -88,6 +88,20 @@ describe('FeatureManager', () => {
     expect(manager.getDriver().assertGetRawValueSync).not.toBeDefined()
   })
 
+  it('AsyncFeatureManager should return a string', async () => {
+    interface Flags {
+      'test-flag': string
+    }
+
+    const envDriver = new SimpleKeyValueDriver<Flags>({
+      'test-flag': 'test-value',
+    })
+
+    const manager = new AsyncFeatureManager<Flags, any>(envDriver)
+
+    const value = await manager.getValue('test-flag')
+  })
+
   it('can swap managers for the same variable', async () => {
     const ldServerDriver = new LaunchDarklyServerDriver(
       new MockLdServerClient() as unknown as LDClient,

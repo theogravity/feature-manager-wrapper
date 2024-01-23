@@ -15,6 +15,8 @@ export interface IAsyncFeatureManager<
    *
    * Examples:
    *
+   *  - null => null
+   *  - undefined => undefined
    *  - "true" => true
    *  - "123" => 123
    *  - "{ "foo": "bar" }" => { foo: "bar" }
@@ -38,7 +40,8 @@ export interface IAsyncFeatureManager<
    *
    * Examples:
    *
-   *  - null / undefined => null
+   *  - null => null
+   *  - undefined => undefined
    *  - "true" => true
    *  - "123" => 123
    *  - "{ "foo": "bar" }" => { foo: "bar" }
@@ -94,7 +97,8 @@ export interface IAsyncFeatureManager<
    *
    * Examples:
    *
-   *  - null / undefined => null
+   *  - null => null
+   *  - undefined => undefined
    *  - "true" => true
    *  - "123" => 123
    *  - "{ "foo": "bar" }" => { foo: "bar" }

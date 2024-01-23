@@ -477,6 +477,8 @@ constructor(driver: AsyncFeatureManagerDriver<Flags, Context>)
  *
  * Examples:
  *
+ *  - null => null
+ *  - undefined => undefined
  *  - "true" => true
  *  - "123" => 123
  *  - "{ "foo": "bar" }" => { foo: "bar" }
@@ -503,7 +505,8 @@ constructor(driver: AsyncFeatureManagerDriver<Flags, Context>)
  *
  * Examples:
  *
- *  - null / undefined => null
+ *  - null => null
+ *  - undefined => undefined
  *  - "true" => true
  *  - "123" => 123
  *  - "{ "foo": "bar" }" => { foo: "bar" }
@@ -561,7 +564,8 @@ constructor(driver: AsyncFeatureManagerDriver<Flags, Context>)
    *
    * Examples:
    *
-   *  - null / undefined => null
+   *  - null => null
+   *  - undefined => undefined
    *  - "true" => true
    *  - "123" => 123
    *  - "{ "foo": "bar" }" => { foo: "bar" }
@@ -634,6 +638,8 @@ constructor(driver: SyncFeatureManagerDriver<Flags, Context>)
  *
  * Examples:
  *
+ *  - null => null
+ *  - undefined => undefined
  *  - "true" => true
  *  - "123" => 123
  *  - "{ "foo": "bar" }" => { foo: "bar" }
@@ -660,7 +666,8 @@ assertGetValueSync<K extends string & keyof Flags>(
  *
  * Examples:
  *
- *  - null / undefined => null
+ *  - null => null
+ *  - undefined => undefined
  *  - "true" => true
  *  - "123" => 123
  *  - "{ "foo": "bar" }" => { foo: "bar" }
@@ -721,7 +728,8 @@ assertGetRawValueSync<K extends string & keyof Flags>(
  *
  * Examples:
  *
- *  - null / undefined => null
+ *  - null => null
+ *  - undefined => undefined
  *  - "true" => true
  *  - "123" => 123
  *  - "{ "foo": "bar" }" => { foo: "bar" }

@@ -1,3 +1,9 @@
+# 3.3.1
+
+- Fix some type inference issues on `AsyncFeatureManager` and `SyncFeatureManager`
+- Fixed inaccurate documentation around how value conversion works:
+  - Should always be `null -> null` and `undefined -> undefined` instead of `null / undefined -> null`
+
 # 3.3.0
 
 - Add `setValueSync` and `setValuesSync` methods to `SimpleKeyValueDriver`
