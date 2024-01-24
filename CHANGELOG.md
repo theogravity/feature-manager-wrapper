@@ -1,3 +1,7 @@
+# 3.3.2
+
+- Export `ValueReturnType` interface
+
 # 3.3.1
 
 - Fix some type inference issues on `AsyncFeatureManager` and `SyncFeatureManager`

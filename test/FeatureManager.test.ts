@@ -144,4 +144,22 @@ describe('FeatureManager', () => {
 
     expect(manager).toBeDefined()
   })
+
+  it('should retain types after class extension', async () => {
+    interface Flags {
+      'test-flag': string
+    }
+
+    class SampleFeatureManager extends AsyncFeatureManager<Flags, any> {
+      constructor() {
+        super(new SimpleKeyValueDriver<Flags>({ 'test-flag': 'test-value' }))
+      }
+    }
+
+    const manager = new SampleFeatureManager()
+
+    const value = await manager.getValue('test-flag')
+
+    expect(value).toBe('test-value')
+  })
 })

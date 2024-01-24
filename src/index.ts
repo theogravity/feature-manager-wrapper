@@ -13,6 +13,6 @@ export * from './managers/AsyncFeatureManager'
 export * from './managers/SyncFeatureManager'
 
 export * from './types/ISyncFeatureManager'
-export { CommonValueParams } from './types/common.types'
-export { IAsyncFeatureManager } from './types/IAsyncFeatureManager'
+export * from './types/common.types'
+
 export { FeatureManagerAssertionError, deriveValue } from './utils'

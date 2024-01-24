@@ -12,6 +12,9 @@ export type CommonValueParams<Flags, K extends keyof Flags> = {
   context?: any
 }
 
+/**
+ * The return type of a flag value.
+ */
 export type ValueReturnType<
   Flags,
   K extends keyof Flags,
