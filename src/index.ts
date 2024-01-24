@@ -12,6 +12,7 @@ export * from './base-drivers/AsyncFeatureManagerDriver'
 export * from './managers/AsyncFeatureManager'
 export * from './managers/SyncFeatureManager'
 
+export * from './types/IAsyncFeatureManager'
 export * from './types/ISyncFeatureManager'
 export * from './types/common.types'
 

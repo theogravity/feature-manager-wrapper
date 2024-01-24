@@ -1,3 +1,7 @@
+# 3.3.3
+
+- Export `IAsyncFeatureManager` interface
+
 # 3.3.2
 
 - Export `ValueReturnType` interface
